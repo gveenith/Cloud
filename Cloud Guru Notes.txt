@@ -1,3 +1,47 @@
+Compute
+EC2 “Elastic Compute Cloud” - they are VM machines inside club platforms . There can be physical machines too
+EC2 container service - run and manage docker container at scale
+Elastic bean stock - developers who don’t understand AWS and just upload their code . Then Elastic bean stock will go through and provision , load balance EC2 instances so that developer just consentrates on code.
+Lambda - Lambda is a code that we can upload to cloud after which we can control and it executes. we don’t need to worry about VMs and underlying services. all we need to worry about is code. 
+Lightsail - is amazon’s Virtual private service service. This is designed to provision users with server it will give you with fixed ip address and RDC access for windows and consoles to manage service . it is a watered down version of EC2. 
+Batch - used to do batch computing.
+
+Storage
+S3 “Simple Storage Service” - Upload files to buckets in cloud. One of old service
+EFS “Elastic File system“ - Network attached storage so we can store go and store files in an EFS volume and mount that to multiple VM’s 
+Glacier - Data archival 
+Snowball - Used to bring in large amount of data to AWS data center instead of transferring through wifi as physically transferring data is fast in this case due to huge volume of data.
+Storage Gateway - Virtual appliances that are installed in DC that will replicate data back to S3. 
+
+Database
+RDS “Relational Database Service” - mysql , postgress sql, aurora, oracle etc basically any relational DB will sit inside it.
+Dynamo DB - Used for non relational data bases
+Elasticache - Is a way of caching commonly  used sql query. so db will be free to perform other query.
+Red Shift - is for data warehousing or BI where we will be doin complex queries. 
+
+Migration
+AWS Migration Hub - Tracking service to track app as you migrate to AWS services and also integrates to others serves in framework.
+Application Discovery service - Automated set of tool to detect what apps we have and the dependency it needs.
+Database Migration service - Helps to migrate DB from on premise to AWS.
+Server Migration Service - Helps to migrate VM and physical servers to AWS cloud.
+Snowball - used to migrate lager amount of data to Cloud we are speaking in tera bytes.
+
+Networking & content Delivery
+VPC “Virtual Private Cloud: - Virtual Data center. We go in and configure Availability zone, network address ranges , route tables , network ACLs etc.
+Cloud Front - Cloud Front is Amazon’s Content delivery network . it  stores media files like video files or image files in location closer edge locations of users instead of users accessing them from a long distance locations.
+route53 - is amazons DNS service 
+API Gateway - is way of creating own API for other services to talk to.
+Direct connect - Dedicated line from corp head office or Data center to Amazons and it will directly connect into your VPC.
+
+Developer Tools
+CodeStar - is way of getting group of developers to work together easily. setup code , continuous delivery tool chain etc.
+Code commit - source control service
+Code build - will compile code and run tests against it and then will produce software packages ready to deploy
+Code deploy - Automates application deployment to EC2 instances as well deployment to on premise instances as well to lambda instances as well.
+code pipeline - continuous delivery service to model and visualize and automate setps to release software
+Xray - to debug and analyze server less applications , it has request tracing to find root causes to issues and address perfomance issues.
+Cloud9 - IDE environment to Develop code inside AWS console (in web browser).
+
 Management 
 CloudWatch - Monitoring service. sysopsops use it extensively
 CloudFormation - It's a way of scripting infrastructure. Solutions Architects used it extensively.
@@ -38,7 +82,6 @@ Kinesis Vide Streams - ingest large amount of video data into AWS
 QuickSight - Business Intelegince tool 
 Data Pipeline - is a way of moving data between different AWS services.
 Glue - used to Extract, Transform and Load large amount of data 
-
 
 Security & Identity and Compliance 
 IAM "Identity Access Management" 
@@ -95,8 +138,6 @@ GameLift - service to help develop games. This can be Vr games as well and can b
 
 
 
-
-
 IAM - Identity Access Management 
 Manage users and theor level of access to the AWS console.
 Gives you :
@@ -116,6 +157,17 @@ Roles
 Permission
 
 
+Simple Token Service 
+Grant users simple and temporary access to AWS resources.Users can come form 3 sources 
+1. Federation (typically active Directory) - uses SAML “security assertion Markup Language” . Grants temp access based off users AD credentials. Does not need to be user in IAM. SSO allows users to sign on to AWS without assignign IAM credentials.
+2. Federation with Mobile apps - uses Google/Amazon/FB other open ID providers to log i 
+3. Cross Account access - users form one AWS account access resources of other account.
+
+Key Terms in STS 
+Federation - Combining or joining a list of users in one domain (such as IAM) with a list of users in another domain (AD, FB etc)
+Identity Broker - a service that allows you to take identity from point a and join it(federate it ) to point b 
+Identity store - Services like AD, FB etc
+Identities - user of a service like FB etc
 
 
 
