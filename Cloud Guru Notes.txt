@@ -1,0 +1,124 @@
+Management 
+CloudWatch - Monitoring service. sysopsops use it extensively
+CloudFormation - It's a way of scripting infrastructure. Solutions Architects used it extensively.
+CloudTrail - any changes or we are doing something in cloud then we trigger API in cloud env then cloud trail will capture it. 
+Config - Monitors the configuration of entire AWS environemnt.
+OpsWorks - Similar to Elastic Beans but a lot more robus . Its  way of automating environemts so all the configuration of environemts are there. 
+Service Catalog - a way of managing a catalog of IT services like databases , VMs, OS, inducidual systems etc.
+Systems Manager - Interface to manage AWS resources typpicallysed used by EC2 instances. 
+Trusted Advisor - would give advice about security , how to save money , wil tell you if we leave any port open, tell if we havent used more AWS servies. Basically like a secretary.
+Managed Services - Amazon affers Managed services for thier own AWScloud so we not need to wory about EC2 instances or scaling.
+
+Media Services
+Elastic Transcoder - Takes the video files makes it look good across platorms.
+Media convert - File based video transcoding service with broadcast video features. allows to create video on demand content for  broadcast and stream across multiple screens.
+Media Live -   Creates high quality video streams to braodcast to internet connected devices 
+Media Package - Prepares and protects videos for delivery over internet.
+Media Store - great place to Store media. gives good perfomance lowers latency.
+Media Traior - Allows to do targetted advertising without compromising on bradcast level quality of service
+
+Machine Learning
+Sage Maker - Makes Easy for developers to use deep learning when coding for environemnt.
+Comprehend - Does sentiment analysis around data of your product.
+DeepLens - Artificially aware camera. Camera itself can recognise whats infront of it. It's a physical piece of harware.
+Lex - It powers the Amazon Alexa service . Lex is a way of communicating with cusotmers.
+Machine Learning - Through a dataset into AWS cloud and it will analysis and give an outcome. like amazon's suggested item while ahopping.
+Polly - Takes text and turns it into speach.
+Rekognition - it tell whats in the file. it will recognise and tell what is in the picture with percentage acuracy. 
+Amazon Translate - Translate languages.
+Amazon Transcribe - Automatic speach recognition. Speach to Text
+
+Analytics
+Athena - Allows to run SQL query against things in your S3 bucket. completely Serverless no infrastructure to manage.
+EMR - Used for Processing large amount of data ( big data solutions)
+cloud Search - search services for AWS
+elastic Search services  - search services for AWS
+Kinesis - is way of ingesting large amount of data into AWS like social media feeds 
+Kinesis Vide Streams - ingest large amount of video data into AWS
+QuickSight - Business Intelegince tool 
+Data Pipeline - is a way of moving data between different AWS services.
+Glue - used to Extract, Transform and Load large amount of data 
+
+
+Security & Identity and Compliance 
+IAM "Identity Access Management" 
+Cognito - Device Authentication
+GuardDuty - Monitors AWS account for Malicious attach.
+Inspector - is an agent that need to install in VM's or EC2 instances and a tests can be run on them like does my EC2 instances have security vulnarabilites and Inspector will give you a report.
+Macie - Will scan S3 buckets for Personally identifiable information (PII) and send alert 
+Certificate Manager - is used to manage SSL certificate.
+CloudHSM "Hardware Security Module" - dedicated piece of harware to store private/public keys. 
+Directory Services - Way of integrating MS active directory services with AWS services.
+WAF "Web Applicaiton firewall" - its like a firewall layer whch stops things like cross site scirpting , sql injection so it monitors application level and sees if user is acting malicious if it needs to intervene to prevent any attack.
+Shield - Shield is used to prevent DDOS attack. 
+Artifact - this tool is good for audit and compliance . its a portal to download on demand AWS compliance report. Basically download and understand amazon documentation.
+
+Mobile Services 
+mobile Hub - Management console . We can create mobile hub and it basically setup AWS services for you and generates cloud configuration file then we can use AWS clud SDK  to connec to AWS backend.
+Pinpoint - targetted push notification to drive customer engagement. 
+AWS App Sync - Automatically updates data in web and mobile in real time and also updates data for offline users once they connect back.
+DeviceFarm - is a way of testing apps in real live devices so this could be iphone or android etc. 
+Mobile analytics - is analystics for mobile devices 
+
+AR/VR code name Sumerian
+common set of tools used to create AR/VR 
+
+Application Integration 
+Step Functions - this is way of managing lambda funtionas and diffrent functions/steps to go through it.
+amazon MQ - Amazons version of using MQs
+SNS - Simple Notification Service 
+SQS - simple Queue SErvice . Decoupling your infrastructure 
+SWF - simple workflow service . 
+
+Customer Engagement 
+Connect - contact center as a service i.e like a contact center in cloud .
+Simple Email Service - Amazon's email service 
+
+Business Productivity
+Alexa For business - WE can use alexa for doing whole bunch of things with respect to business like joining a meeting , reporting a broken printer to IT etc .
+Chime - video conferencing 
+Work docs - like a drop box for AWS.
+WorkMail - this is amazons was of microsoft ofice 365
+
+Desktop and app streaming 
+Workspaces - is a VDI solution
+App Steam 2.0 - is a way of streaming applications . App is running in cloud but gets streamed in your device [ like citrix does]
+
+IOT 
+iOT "Internet of things" - electronic devices can send in informations like sensor temerature or videos or audios etc.
+iOT Device Management - electronic devices can send in data/inputs and managing at large scale can be difficult and that where IOT device management comes in and it can be managed it.
+Amazon FreeRTOS - operating system for micro controllers. 
+Greengrass - is a software that lets you run  local compute messaging , data caching , sync and machine learning capabilites for connected devices in a secure way.
+
+Game Development
+GameLift - service to help develop games. This can be Vr games as well and can be hosted in cloud.
+
+
+
+
+
+IAM - Identity Access Management 
+Manage users and theor level of access to the AWS console.
+Gives you :
+Centralised control of your AWS account 
+Shared access to your AWS account 
+Granular Permission 
+Identity Federation
+Multifactor Authentication 
+Temp access for users/devices and services where necessary
+set up own password rotation policy
+Integrates with many different AWS services
+Supports PCI DSS compliance 
+Important terminology :
+User
+Group
+Roles
+Permission
+
+
+
+
+
+
+
+
