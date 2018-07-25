@@ -219,7 +219,7 @@ create private key pair
 To ssh to an instance programmatically from local.
 change the permission to the private key : chmod 400 keypairname.pem
 Connect to your instance using its Public DNS:
-ssh -i "NewKeypair.pem" ec2-user@ec2-52-14-91-39.us-east-2.compute.amazonaws.com
+ssh -i "NewKeypair.pem" ec2-user@.us-east-2.compute.amazonaws.com
 sudo yum update to apply any updates
 Elevate access to root : sudo su
 ec2-user will become root
@@ -509,7 +509,7 @@ AWS managed CMK - AWS will create , manage and use with integrated AWS services.
 Data Keys - Data keys are encryption keys that you use to encrypt your data. these keys are managed outside of KMS. They are created using below logic:
 
 CUSTOMER MASTER KEY (KMS)-> ENCRYPTION ALGORITHM (INPUT PLAIN TEXT) -> ENCRYPTED DATA KEY.
-aws kms encrypt --key-id 5bac3bbf-2332-4d00-93c3-76bf49bc389c --plaintext fileb://secret.txt --output text --query CiphertextBlob | base64 --decode > encryptsecret.txt
+aws kms encrypt --key-id ENTER KEY --plaintext fileb://secret.txt --output text --query CiphertextBlob | base64 --decode > encryptsecret.txt
 
 Encrypt data using Data key - use the encrypted data key to encrypt the data and then store the encrypted key and encrypted data for decryption later on. remove plain text data key from memory as soon as possible.
 Decrypt - decrypt the encrypted data key using CMS key and this gives plain text data key.  
@@ -517,9 +517,9 @@ Decrypt - decrypt the encrypted data key using CMS key and this gives plain text
 aws kms decrypt --ciphertext-blob fileb://encryptsecret.txt --output text --query Plaintext | base64 --decode > decryptencryptsecret.txt
 
 use plain text data key to decrypt the data. remove the plain text key from memory soon.
-aws kms re-encrypt --destination-key-id 5bac3bbf-2332-4d00-93c3-76bf49bc389c --ciphertext-blob fileb://encryptsecret.txt | base64 > newencryption.txt
+aws kms re-encrypt --destination-key-id ENTER KEY --ciphertext-blob fileb://encryptsecret.txt | base64 > newencryption.txt
 If you want to rotate your key the you can use this command.
-aws kms enable-key-rotation --key-id 5bac3bbf-2332-4d00-93c3-76bf49bc389c
+aws kms enable-key-rotation --key-id ENTER KEY
 
 Key manager : once who manages the CMK
 Encrypter : on who can perform encryption and decryption using CMK.
