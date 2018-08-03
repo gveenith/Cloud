@@ -302,11 +302,8 @@ Multi AZ - IS for Disaster recovery only and not for performance improvements. A
 Read Replica - Asynchronous replication from primary RDS to read relica allows us to have read only copy of production data base.this is used primarily when there is very heavy ready only action in DB. It is available for MySQL, PostgreSQL, Maria DB and Aurora. It is used for Scaling and not for Disaster recovery. Automatic backs must be turned on ignorer to use it. there can be 5 read replicas max of any db. you can have read replicas of read replicas (but increases latency) but each replica will have unique DNS endpoint. 
 You can have and create read replicas on instances that have Multi AZ. Read replicas can be promoted to become their own databases but this will break the replication. finally you can have read replica in second region . 
 ----------------------------------------------------------------------------------------------------------------------------------------------
-
-
------------------------------------------------------------------------------------------------------------------------------------------------
 S3 - Simple Storage Service
-
+----------------------------------------------------------------------------------------------------------------------------------------------
 simple, secure, highly scalable object based storage , with a simple web service interface to store and retrieve data.
 
 S3 Basics:
@@ -354,16 +351,66 @@ by default newly created buckets are PRIVATE so only the creater of the bucket w
 you can setup access control to your bucket using bucket policies (applied at bucket level) and access control list ( applied at object level).
 S3 buckets can be configured to create access logs. These logs can also be written to another bucket.
 
+S3 Encryption:
+2 diferent types of encryption : Encryption in transit and Encryption at Rest
+- encryption in transit TLS/SSL i.e encrypts over network b/w your PC and S3. typically uses HTTP protocol.
+- At rest - Server Side encryption or Client side encrption
+	-Server Side encryption
+		-"S3- MasterKey" S3 Managed Keys. Each obj is encrypted with unique key with strong multifactored encryption. As an additional step the unique key itself is  	encrypted with master key which Amazon regularly rotate for you. 256 bit encryption.
+		-"S3-KMS" AWS key Management service using . KMS comes with an  Envelop Key it is a key that encrypts your datas encryption key. Has an audit trail. 
+		-"SSE-C" Server side encryption with customer provided keys. AWS manages encryption and decryption but you manage your own keys.
+	- Client Side encryption : you encrypt the file your self before you upload it to S3.
+Enforcing Encryption on S3 Buckets:
+Every time a file is uploaded to S3, a PUT request is initiated.
+PUT/myfile HTTP/1.1
+Host:
+Date:
+Authorizaion:
+Content Type:
+Content Length:
+z-amz-meta-author:
+Expect:
 
+if the file is to be encrypted at upload time then x-amz-server-side-encryption parameter will be included in header. and there are 2 values for this parameter. 
+x-amz-server-side-encryption: AES256 (SSE-S3 - S3 mananged keys)
+x-amz-server-side-encryption: ams:kms (SSE-KMS- KMS managed key)
 
+Server side encryption can be enforced using cuket policy which denies any S3 PUT request which dosent include the x-amz-server-side-encryption parameter in request header.
+PUT/myfile HTTP/1.1
+Host:mybucket.s3.amazonaws.com
+Date:
+Authorizaion: authorization string
+Content Type:
+Content Length:
+z-amz-meta-author:
+Expect: 100-continue
+x-amz-server-side-encryption: AES256 
 
-
-
-
-
-
+LAB
+To include encryption to Bucket 
+{
+  "Id": "Policy1531513044034",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Stmt1531513034594",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::gveenith-s3",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms"
+        }
+      },
+      "Principal": "*"
+    }
+  ]
+}
 ------------------------------------------------------------------------------------------------------
 CloudFront
+------------------------------------------------------------------------------------------------------
 Amazon cloud front can be used to deliver your entire website  including static , dynamic, streaming and interactive content using a global network of edge location. request for your content is automatically routed to the nearest edge location so continent is delivered with best possible performance.	
 Terminologies:
 CDN - Content Delivery Network is a system of distributed servers(network) that delivers web page and other web content to users based on geographical location of the user, origin 	of web page and a content delivery server.
@@ -384,7 +431,7 @@ MIXED request type workload - Key names we use may impact performance. random ke
 
 -----------------------------------------------------------------------------------------------------------
 Lambda
-
+-----------------------------------------------------------------------------------------------------------
 Lambda is a computer service where you can upload the code and create a lambda function. Lambda takes care of provisioning and managing the servers that you use to run the code. you don't have to worry about your operating system, scaling, patching etc. you can run lambda in 2 ways:
 	- As an event driven compute service: where AWS lambda runs your code in response  to the events. these events can be change to data in s3 etc.
 	- As a compute service to run your code in response to HTTP request using Amazon API gateway or API calls made using AWS SDK.
@@ -416,7 +463,6 @@ s3
 SNS
 SQS
 
-
 Amazon API Gateway: is a fully managed service that makes it easy for developers to publish, maintain, monitor and secure API at any scale. with few licks in amazon console you can create an api that acts as a front door to access your data base, business logic or functionality form back end services such as apps running in EC2 or lambda functions. 
 API gate way is low cost and can scale automatically. you can throttle api gateway to prevent attacks. you can log results using cloud watch. if you re using js/ajax that uses multiple domain gateway then ensure you enable CORS on API gateway. CORS is endorsed by the client.
 
@@ -444,9 +490,6 @@ the maximum concurrent request is 5000 request across all API within an AWS acco
 if you go over 10,000 request per second or 5000 concurrent request across all aPI we will get a 429 Too many request error response.
 
 you can configure API gateway as a SOAP web service passthrough.
- 
-
-
 -----------------------------------------------------------------------------------------------------------
 STEP FUNCTION
 Great way to visualize your server less application.
@@ -471,6 +514,51 @@ Amazon Elastic Beanstalk
 
 LANGUAGE SUPPORTED: java, Python, Go, Node.js, Ruby, .NET
 -----------------------------------------------------------------------------------------------------------
+DYNAMO DB 
+-----------------------------------------------------------------------------------------------------------
+Fast and reliable NOSQL database for all apps that need consistenet single digit millisecond lateancy at any scale.
+Fuly managed database and supports document and key value data models.
+Flexible data model and reliable perfomance makes it a great fit for mobile , web, gaming, ad-tech, IoT and many other apps.
+Stored on SSD storage
+Spread on 3 geologically disticint datacenters.
+2 consistency models:
+	- Eventual Consistent Reads (default) : consistency across all copies of data is reached within a second. REpeating a read after short time will give updated data ( Best read perfomance)
+	- Strongly Consistent Reads : If you want guaranteed certain value then use this. it returns a result that reflects all writes that received a successful response  prior to the read.
+
+Tables
+Items (think row)
+Attributes (think column)
+Supports key value pair and document
+key is name of the data, value is data itself.
+document can be written in JSON,HTMLor XML
+
+Primary Keys:2 types
+-Partition Key -  unique attribute eg User ID. value of partition key is input to internal hash function which will decide if the partition or physical location where data is going to be stored. If you are going to use partition key as primary key then no items can have same partition key.
+-Composite Key -  combination of Partition key + Sort Key . eg same user id posting in a forum. user id is partition key and it can be same but timestamp will be the sort which will be different. all items with same partition key are stored under together , then sorted according to sort key. 
+
+Access Control
+authentication and access control managed by IAM. can create users  using IAM who can then access dynamo db or create roles which can be used to grant temp access to AWS services like DynamoDB . can use "IAM condition" to restrict users to only their own record. dynamodb: LeadingKeys:
+
+UnrecognizedClientException - there is no authorization for EC@ which calls dynamodb to get items. 
+
+Indexes enable fast queries on specific data columns.
+2 types of Indexes: Local Secondary Index and Global secondary Index.
+Local Secondary Index - can only be created only when you are creating a table and cannot be added, removed or modified later. It has same partition key as original table but different sort key. and this organizes the view according to sort key. any query based on this sort key will be faster in this index table rather than using the main table.
+Global Secondary Index - can create when you create a table or add it later . Different partition and sort key. speeds up query relating to partition as well as sort key. 
+
+Query:
+A query operation finds items in a table based on the Primary Key attribute and a distinct value to search. can use sort key value to refine results.
+You can limit the attributes retured by query by providing ProjectionExpression parameter. 
+Numeric or ASCII characters are sorted order by default is ascending (1234). you can reverse the order by setting ScanIndexForward parameter to false.
+By default, Queries are evetualy consistent. you can set them to be strongly consistent but you need to explicitly specifiy it.
+
+Scan:
+A scan operation examines every item in table. by default returns all attributes and we can use ProjectionExpression parameter to refine scan to return only the attributes we want. To make it more efficient you can isolate scan operation to specific table and segregate them from your mission critical traffic or try running parallel scans rather than default sequentiual scan. 
+
+Query is more efficeint than a scan as scan dumps the entire table ans then applies filter on the values to provide desired results. As table groes scan operation will take longer time. you can increase the perfomance by setting smaller page size which uses fewer read operations. larger amount of smaller operations will allow other requests to succeed witout throttling. Avoid scans , try using query, get ot batchgetitems api.
+
+aws dynamodb get-item --table-name TABLENAME --key 
+
 Dynamo DB Provisioned Throughput:
 Dynamo DB provisioned throughput is measured in Capacity units. 
 when you create your table you can specify the requirement in terms of read or write capacity units
@@ -487,9 +575,7 @@ If item is not available in cache then it performs eventually consistent get ite
 Not suitable for strong consistency read or write heavy apps or apps that do not perform a lot of read or apps that do not require microsecond response.
 
 Elasticache: 
-ElastiCache
-
-is a web service that makes it easy to deploy, operate and scale a in memory cache in cloud. 
+ElastiCache is a web service that makes it easy to deploy, operate and scale a in memory cache in cloud. 
 improves perfomance, takes load off db.
 good for read heavy and data NOT changing frequently situations.
 frequently accessed data are stored in memory for low latency access thereby improving overall performance of your app.
@@ -503,6 +589,20 @@ Lazy Loading: stores data in cache only when necessary. if data not in cache or 
 Write Through: add or update cache when ever data is written to database. so data in cache is never stale but the down side is write penalty i.e every write to db is a write to cache as well. 
 
 ------------------------------------------------------------------------------------------------------------
+KMS - Key Management Service.
+------------------------------------------------------------------------------------------------------------
+create and control the encryption keys
+Encryption keys for KMS are regional
+integrated with EBC,S3,redshift,Elastic Transcoder,Workmail,RDS and few other AWS services. it is also integrated with cloud trail to give logs of all key usage.
+Customer Master Key: CMK (can never be exported)
+alias
+description
+key material (customer managed CMK i.e your own key material or AWS managed CMS ie KMS generated key material)
+creation date
+key state
+
+Envelope encryption
+The customer Master key is used to decrypt the data key (envelop key). Envelop key is used to decrypt data.
 Customer Master Key - the primary resources in KMS are customer master key which is used to encrypt and decrypt up to 4Kb of data. Typically we use CMKs to generate, encrypt and decrypt data keys which is used outside of KMS to encrypt your data.
 Customer managed CMK - AMW KMS generates a master key know as customer master key which is used by customer to externally encrypt or decrypt data. 
 AWS managed CMK - AWS will create , manage and use with integrated AWS services.
@@ -604,6 +704,179 @@ Kinesis Streams - Producers send data to kinesis streams which consists of shard
 	-Data Streams - Build custom app and process data in real time
 Kinesis Firehose - Producers send data to kinesis firehouse and the consumers can use this data for analytics using lambda if needed or send it to S3 or store it redshift through 		 s3. But they can't store or retain it in firehouse. Firehose is a completely automated process.
 Kinesis Analytics - consumers send data which are stored either in streams or firehose and then analytics can be used to allows to run sql query on the data resides in firehose or 		streams and the resultant data can be stored in s3, redshift to elasticsearch cluster.
+
+--------------------------------------------------------------------------------------------------------------------------
+CODE COMMIT:
+used to store code in repo.
+uses git.
+
+Create a user and attach below policy and use that user to ssh or https to push the code from local git to AWS codecommit.
+IAM access needed: AWScodecommitFullAccess
+
+CODE DEPLOY :
+appsec.yml stores the configuration needed for code deploy. it is stored with the source folder of project in repo.
+appspec.yml
+version:
+os:
+File:
+	source:
+	destination:
+hooks:
+	BeforeBlockTraffic:
+	BlockTraffic:
+	AfterBlockTraffic:
+	ApplicationStop:
+	Downloadbundle:
+	BeforeInstall:
+		location:location of script to install dependencies
+		timeout:
+		runas:root
+		localtion:location of script to start server
+		timeout:
+		runas:
+	Install:
+	AfterInstall:
+		localtion:location of script to stop server
+		timeout:
+		runas:
+	ApplicationStart:
+		location:
+		timeout:
+	ValidationService:
+		location:
+		timeout:
+		runas:
+	BeforeAllowTraffic:
+	AllowTraffic:
+	AfterAllowTRaffic:
+
+Package code and appspec.yml file and create the applciation within code deploy: 
+aws deploy  create-application --application-name YOURAPPNAME
+once app is created push the app into your s3 or github or bitbucket repo:
+aws deploy push --application-name YOURAPPNAME --s3-location s://bucketname/yourappname.zip --ignore-hidden-files
+the application can be in .zip, .tar or .gz extensions.
+
+Open code deploy and you will be able to see the application.
+
+Deployment group: a deployment group consists of one or more EC2 instances or inpremise instances.
+
+Deployment Type:
+In-Place: each instance will be briefly taken offline for its update. 
+Blue/Green: replaces the instances with new isntances that has the revision. After instances from the replacement env is registered with LB the instances from currrent env is deregistered and terminated.
+
+Environment Configuration:specify instances to add to this deployment.
+Autoscalling : upto 10 autoscalling groups can be configured
+EC2 instances: Select the Tag of your EC2 -> Single Tag group single Tag, Single Tag group multiplt Tag, Multiple tag group single tag and Multiple tag group multiple tag. Max 3 tag groups 
+On-premise instances : 
+		
+Deployment configuration:
+CodeDeployDefault.AllAtOnce
+CodeDeployDefault.HalfAtTime
+CodeDeployDefault.OneAtTime
+
+Service Role: give the IAM role that grants code deploy access to your repo. 
+
+Then you can deploy revision. 
+
+Incase of same file name present in current and revision code then what to do :
+Fail th deployment
+Overwrite the content 
+Retain the content 
+
+Roll back option can also be configured if the deployment fails.
+
+**DOCKER: ECS - Elastic Container Service and ECR - Elastic Container Repo**
+allows to create apps based on linus or windows containers.	
+A container is a lightweight standalone package which includes everything the software needs to run like code, runtime env, libraries, env settings etc.
+AWS provices Elastic container Service as a fully managed clustered platform  which allows  to run docker images.
+so first you create a cluster in ECS . clusters are region based. there is NEtwroking only with AWs fargate for servless apps and EC2 linux with n/w and EC2 windows with n/w options . it will create cluster, VPC, subnet and autoscalling group. all these heavy lifting are done using cloud formation. 
+After configuring cluster , create ECR repo.
+give a repo name and repo URI is created.
+Now you have to BUILD, TAG and PUSH Docker image to this repo:
+to retrieve login cmd to the authenticate your docer client to registry.
+aws ecr get-login --region eu-central-1 --no-include-email
+this gives a docker login -u AWS with token keys  as output and you can use that to login 
+TO BUILD:
+docker build -t mydockerreponame
+it successfully builds docker image. and it will append latest to the end to say its the latest image. 
+TO TAG:
+After build you cna tag the build to push it to the repo
+docker tag mydockerreponame:latest regional namespave with docker imahe name :latest [called URI]
+TO PUSH;
+docker push full region and docker image name 
+
+Once docker image is pushed to repor we can create task:
+go to ECS and create task
+
+
+IAM role needed : AmazonEC2ContainerRegistryPowerUser
+
+
+We keep the configuration needed for docker in docker file:
+FROM ubuntu:12.04
+# Install apache
+RUN apt-get update -y
+RUN apt-get install -y apache2
+
+# Create a simple web page
+RUN echo "Hello Cloud Gurus!!!! This web page is running in a Docker container in AWS Elastic Container Service!!" > /var/www/index.html
+
+# Configure apache, set a few variables, expose port 80 and start apache
+RUN a2enmod rewrite
+RUN chown -R www-data:www-data /var/www
+ENV APACHE_RUN_USER www-data
+ENV APACHE_RUN_GROUP www-data
+ENV APACHE_LOG_DIR /var/log/apache2
+
+EXPOSE 80
+
+CMD ["/usr/sbin/apache2", "-D",  "FOREGROUND"]
+
+CODE BUILD:
+compiles code [build] and produces artifactory , run tests. 
+To create a json skeleton file which has build details for code build.
+aws codebuild create-project --generate-cli-skeleton
+Once you enter value in generate skeleton json file 
+aws codebuild create-project --cli-input-json file://filename.json
+
+incase an update to build is needed
+aws codebuild update-project --generate-cli-skeleton 
+aws codebuild update-project --cli-input-json file://filename.json
+
+to start a build 
+aws codebuild start-build --project-name
+
+
+buildspec.yml
+----------------
+version:
+env:
+	variables:
+	parameter-store:
+
+phases:
+	install:
+		commands:
+		finally:
+	pre_build:
+	build:
+	post_build:
+artifacts:
+	files:
+cache:
+	paths:
+
+PIPELINE:
+NAme of the pipeline
+source from where it can pull the revision: s3 , code commit, git hub and the path to it.
+Build : No build, add jnkins, codebuild, solano CI
+Deploy: ECS, cloud formation, cloud deploy, elastic beanstalk.
+chose the existing app through code deploy where you are going to replace current app with revision. 
+Service Role : give IAM role
+Review and create it.
+Source ->staging
+Source : if source file is updated with changes then cloud watch knows about the change and triggers code deploy (staging is trigeered)
+Staging : deploys code to instances.
 
 --------------------------------------------------------------------------------------------------------------------------
 Web Identity Federation
