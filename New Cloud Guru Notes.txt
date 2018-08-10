@@ -1,4 +1,5 @@
 Compute
+Compute
 EC2 “Elastic Compute Cloud” - they are VM machines inside club platforms . There can be physical machines too
 EC2 container service - run and manage docker container at scale
 Elastic bean stock - developers who don’t understand AWS and just upload their code . Then Elastic bean stock will go through and provision , load balance EC2 instances so that developer just concentrate on code.
@@ -139,9 +140,8 @@ GameLift - service to help develop games. This can be Vr games as well and can b
 
 
 IAM - Identity Access Management 
-Manage users and theor level of access to the AWS console.
-Gives you :
-Centralised control of your AWS account 
+Manage users and their level of access to the AWS console.
+Gives you :Centralised control of your AWS account 
 Shared access to your AWS account 
 Granular Permission 
 Identity Federation
@@ -170,9 +170,23 @@ JSON{
 IAM is used to define user access permission within AWS. There are 3 types of IAM policies:
 1. Managed Policies - is created & managed by AWS itself. you can't edit or change the permission defined in it. you can just assign it to single or multiple user, groups and roles.
 2. Customer Managed Policies - is standalone policy that you create and administer inside your own aws account. you can attach it to multiple users, groups and roles. basically its taking an existing managed policy and customizing it to meet you account needs. 
-3. Inline Policies - it is embedded within a single user, group or role. strict 1:1 relationship. if the user/group/role to which the inline policy is embedded, then policy itself is deleted. 
+3. Inline Policies - it is embedded within a single user, group or role. strict 1:1 relationship. if the user/group/role to which the inline policy is embedded, then policy itself is deleted. AWS recommends to use managed policy over inline policy.
 
+Web Identity Federation
+Lets you give access to users to AWS resources after they have successfully authenticated with web based identity providers like fb, google, amazon. the user first authenticates with web identity provider and upon successfully authentication it gives an authentication token which can be traded for temporary AWS credentials allowing them to assume IAM role.
+Amazon COGNITO is an Identity Broker which handles interaction between your application and Web Identity providers. (you don't need to write code in app).It has following features:
+sign up and sign in to apps
+access for guest users
+acts as identity broker between your app and web id providers.
+syncs your data with multiple devices.
+cognito is the recommended approach for web identity federation particularly for mobile apps.
 
+User Pools: are user directories used to manage sign in and sign up functionality for mobile and web applications. users can sign in directly to user pool or indirectly through web identity providers. upon successful authentication a JWT(JSON web token) is generated. cognito acts as Identity broker between web identity providers and AWS.
+Identity Pools: enables you to create unique identity for your users and authenticate them with identity providers, you can obtain limited temp privilege to access AWS resources.
+
+So an user first login into fb or google and get the JWT token which gets added to user pool. then cognito identity pool exchanges this jwt token to give temp access to other aws resources. Cognito manages all these no seperate code needed.
+
+Cognito also tracks association between user identities and various devices they sign in from. cognito uses silent push synchronization to push updates and sync user data crop various devices. Amazon SNS is used to send PUSH notification to various devices associated with a given identity when data changes in cloud. 
 
 ----------------------------------------------------------------------------------------------------------------------------
 EC2 - Elastic Compute Cloud:
@@ -629,15 +643,15 @@ Once you encrypt your data your data is protected after this you have to protect
 
 -----------------------------------------------------------------------------------------------------------
 SQS - Simple Queue Service
-gives access to message queue where you can store messages while waiting for computer to process them. It is a distributed message queue system. queues are temporary storage for messages before they are picked by app. IT is a PULL-BASEd system not a push based one. Messages can contain unto 256KB of text in any format.Messages can be kept in queue from 1 min to 14 days. Default retention period is 4 days. any component can receive this service programmatically using SQS aPI
+gives access to message queue where you can store messages while waiting for computer to process them. It is a distributed message queue system. queues are temporary storage for messages before they are picked by app. It is PULL-BASED system not a push based one. Messages can contain upto 256KB of text in any format.Messages can be kept in queue from 1 min to 14 days. Default retention period is 4 days. any component can receive this service programmatically using SQS API
 
 2 Types of queues: Standard queues and FIFO queues
-- Standard Queues: Default queue type. lets you have unlimited number of transactions per second. guarantees  attest delivery of message at least once. however due to highly 		distributed architecture it can be delivered more than once. Standard queues provide best effort ordering which ensures msg are generally sent in the same order they came 	in but not guaranteed. 
-- FIFO : First In First Out, messages are delivered exactly once and ordering is strictly preserved. Duplicate msgs will never be introduced int the queue , once a msg is sent to customer it waits for 	customer to consume and delete it. it also supports message groups that allow multiple ordered msg groups in a  single queue. FIFO queues are limited to 300 TPS.but have all 	capabilities of standard queues
+- Standard Queues: Default queue type. lets you have unlimited number of transactions per second. guarantees  delivery of message at least once. however due to highly 	distributed architecture it can be delivered more than once. Standard queues provide best effort ordering which ensures msg are generally sent in the same order they came 	in but not guaranteed. 
+- FIFO : First In First Out, messages are delivered exactly once and ordering is strictly preserved. Duplicate msgs will never be introduced into the queue , once a msg is sent to customer it waits for customer to consume and delete it. it also supports message groups that allow multiple ordered msg groups in a  single queue. FIFO queues are limited to 300 TPS.but have all capabilities of standard queues
 
-Visibility Timeout: is the amount of time a message is invisible in the queue after a reads picks up the msg. If the job processes the message before the visibility timeout period then the msg is deleted from queue. if it does not then it is made visible in queue again for another job to process it and this might cause duplicate delivery of message. Default visibility timeout is 30 sec. max we can set is 12 hours.
+Visibility Timeout: is the amount of time a message is invisible in the queue after a reader picks up the msg. If the job processes the message before the visibility timeout period then the msg is deleted from queue. if it does not then it is made visible in queue again for another job to process it and this might cause duplicate delivery of message. Default visibility timeout is 30 sec. max we can set is 12 hours.
 
-SQS Long Polling: is a way to relieve msg from the queue. short polling return immediately (if the queue is empty with no msg, it will return immediately with empty polling) where as with long polling it will wait till a msg arrives or until long poll timeout.Long polling can save money.
+SQS Long Polling: is a way to relieve msg from the queue. short polling return immediately (if the queue is empty with no msg, it will return immediately with empty polling) where as with long polling it will wait till a msg arrives or until long poll timeout.Long polling can save money. Max long poll timeout is 20 sec.
 -------------------------------------------------------------------------------------------------------------------
 SNS - Simple Notification Service	
 SNS is a web service that makes it easy to setup , operate and send notification from cloud.
@@ -645,11 +659,11 @@ It follows Publish-Subscribe (Pub-Sub) message model with notification being del
 It provides developers with highly flexible, scalable and cost effective capability to publish messages from a app and deliver it to subscribers. 
 SNS can deliver notification directly to mobile, send SMS or email to SQS or to any HTTP endpoint. They can also trigger Lambda so when a message is published to a SNS topic d a lambda function is subscribed to it , the lambda function is invoked using the message payload as input parameter. 
 
-SNS TOPIC: Can group multiple recipients using topics. Topic is a "access point" to allow recipients to dynamically subscribe for identitical copy of same notification. . One topic can support delivery to multiple endpoint types eg. android, iOS nd SMS recipients can be souped together and what a message it published SNS deliver appropriate copy to each subscriber. To prevent losing the message they are stored redundantly across multiple AZ.
+SNS TOPIC: Can group multiple recipients using topics. Topic is a "access point" to allow recipients to dynamically subscribe for identitical copy of same notification.  One topic can support delivery to multiple endpoint types eg. android, iOS nd SMS recipients can be grouped together and when a message is published SNS delivers appropriate copy to each subscriber. To prevent losing the message they are stored redundantly across multiple AZ.
 
 Instantaneous push based deliver ( no polling)
 Flexible msg delivery over multiple protocols.
-inexpensive pay as you go model .
+inexpensive pay as you go model.
 
 SNS Pricing :
 $0.50 per 1 million amazon SNS requests.
@@ -682,11 +696,13 @@ Elastic Beanstalk
 is a service for deploying and scaling web apps developed in java, C#, python, node.js, ruby, go, docker onto widely used app servers like tomcat. ngix, passengers and IIS.
 so you upload the code and elastic beanstalk will manage deployment, auto scaling, capacity management, load balancing, application health check. Once it provisions the underlying resources , you will have full admin access to manage underlying resources like EB2 or S3. 
 
+The main difference between EB and Cloud formation is that with EB we do all the needed things through GUI but with cloud formation it is through JSON.
+
 supports several option for processing deployment updates:
 all at once - deploys new version all at once. all instances are out of service while deployment (outage). if update fails , roll back by installing old version.
-rolling - deploys new version in batches. each batch is takes out of service while deployment is in progress (env capacity is reduced). not ideal for perf sensitive apps.if update 	  fails need to perform additional rolling update to roll back changes.
-rolling with additional batch - launches an additional batch of instances. deploys new version in batches(so full capacity is available). if update fails, need to perform additional 				rolling update to roll back changes.
-immutable - deploys the new version to a fresh group of instances in their own auto scaling group. when new instances pass health check they are moved into your existing autoscaling 	    group and old instances are terminated (full capacity is maintained). the impact of failed update is less as it involves only terminating the new auto scaling group. 	    Best for mission critical systems.
+rolling - deploys new version in batches. each batch is takes out of service while deployment is in progress (env capacity is reduced). not ideal for perf sensitive apps.if update fails need to perform additional rolling update to roll back changes.
+rolling with additional batch - launches an additional batch of instances. deploys new version in batches(so full capacity is available). if update fails, need to perform additional rolling update to roll back changes.
+immutable - deploys the new version to a fresh group of instances in their own auto scaling group. when new instances pass health check they are moved into your existing autoscaling group and old instances are terminated (full capacity is maintained). the impact of failed update is less as it involves only terminating the new auto scaling group. Best for mission critical systems.
 
 You can customize elastic beanstalk environment using elastic beanstalk configuration file. these files are written in JSON or YAML and is saved with .config extension inside a folder called .ebextensions. this must be included in the top level directory of your application source code bundle.
 
@@ -694,12 +710,12 @@ RDS and EB :
 There are 2 ways of integrating RDS with Eb.
 -launch RDS instance from within the elastic beanstalk console, this means RDS is tired to the instance of the app so if you terminate your app env your RDS also will be terminated.
  this is suitable for dev or test systems.
-- for prod env the best approach is to decouple ads from EBs and launch it directly from RDS console. by this way you get more flexibility of launching multiple env and pointing it to same system. also by this way we can tear down our app env without affecting RDS. But to all EC2 instances to access the RDS created outside of EBs infrastructure you need to give additional security access o your app env auto scaling group and also provide connection string configuration info to your app server ( endpoints, username, pwd using EBs configuration properties).
+- for prod env the best approach is to decouple ads from EBs and launch it directly from RDS console. by this way you get more flexibility of launching multiple env and pointing it to same system. also by this way we can tear down our app env without affecting RDS. But to all EC2 instances to access the RDS created outside of EBs infrastructure you need to give additional security access to your app environment's auto scaling group and also provide connection string configuration info to your app server ( endpoints, username, pwd using EBs configuration properties).
 -------------------------------------------------------------------------------------------------------------------------
 Kinesis
 is a platform on AWS to send your streaming data. makes it easy to load and analyze streaming data and also provides the ability for you to build your own custom app.
 Kinesis Streams - Producers send data to kinesis streams which consists of shards  on which these stream data are stored for 24 hours and we can increase it to max 7 days retention.
-		then consumers can take data from shards for their processes. Shards gives 5 transaction per second for reads, up to a max total data read rates of 2 MB per sec and 		unto max 1000 records per second for write, upto max write of 1MB per second(inc plantation keys).the total capacity of streams is the sum of he capacity of shards.
+		then consumers can take data from shards for their processes. Shards gives 5 transaction per second for reads, up to a max total data read rates of 2 MB per sec and 		unto max 1000 records per second for write, upto max write of 1MB per second(inc partition keys).the total capacity of streams is the sum of the capacity of shards.
 	-Video streams - securely streams video from connected devices to AWS for analytics and machine learning.
 	-Data Streams - Build custom app and process data in real time
 Kinesis Firehose - Producers send data to kinesis firehouse and the consumers can use this data for analytics using lambda if needed or send it to S3 or store it redshift through 		 s3. But they can't store or retain it in firehouse. Firehose is a completely automated process.
@@ -879,19 +895,6 @@ Source : if source file is updated with changes then cloud watch knows about the
 Staging : deploys code to instances.
 
 --------------------------------------------------------------------------------------------------------------------------
-Web Identity Federation
-Lets you give access to users to AWS resources after they have successfully authenticated with web based identity providers like fb, google, amazon. the user first authenticates with web identity provider and upon successfully authentication it gives an authentication token which can be traded for temporary AWS credentials allowing them to assume IAM role.
-Amazon COGNITO is an Identity Broker which handles interaction between your application and Web Identity providers. (you don't need to write code in app).It has following features:
-sign up and sign in to apps
-access for guest users
-acts as identity broker between your app and web id providers.
-syncs your data with multiple devices.
-cognito is the recommended approach for web identity federation particularly for mobile apps.
-
-User Pools: are user directories used to manage sign in and sign up functionality for mobile and web applications. users can sign in directly to user pool or indirectly through web identity providers. upon successful authentication a JWT(JSON web token) is generated. cognito acts as Identity broker between web identity providers and AWS.
-Identity Pools: enables you to create unique identity for your users and authenticate them with identity providers, you can obtain limited temp privilege to access AWS resources.
-
-Cognito also tracks association between user identities and various devices they sign in from. cognito uses push synchronization to push updates and sync user data crop various devices. Amazon SNS is uses to send PUSH notification to various devices associated with a given identity when data changes in cloud. 
 ------------------------------------------------------------------------------------------------------------------------------ 
 
 
