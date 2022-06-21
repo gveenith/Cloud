@@ -1,0 +1,233 @@
+S3 - Simple Storage Service
+----------------------------------------------------------------------------------------------------------------------------------------------
+simple, secure, highly scalable object based storage , with a simple web service interface to store and retrieve data.
+
+S3 Basics:
+Object storage so only suitable for files not suitable for operating system or running a DB.
+S3 is a universal namespace so the names of must be unique globally.
+Buckets are defined at regional level
+READ AFTER WRITE consistencey . after an update (PUT) or overwrite(PUT) of an object , when a READ (GET) is performed the changes immediately reflect. same goes with DELETE and then ready.
+Files can be 0 to 5 TB in size.
+there is unlimited storage.
+Files are stored in buckets (similar to a folder)
+Built for 99.99% availability and Amazon guarantees 99.9% which is equal to 53 mins in a year it may not be avaible.
+Amazon guarantees 99.999999999% (11 9's) durability.
+Tiered storage available
+Life cycle management
+Http 200 code if upload is successful. http code is only through CLI or API not through browser
+Version control
+Encryption
+secure you data - Access
+Control List and Bucket policies
+
+
+Naming convention:
+No uppcase
+No underscore
+3-63 char long
+Not an IP
+Must start with lower case letter or number
+
+Object (files) consist of following:
+Key - Name fo the object. key is composed of prefix + objectname
+	  example - s3://my-bucket/my_file.txt --> my_file.txt is the key to the object.
+		  		s3://my-bucket/my_folder/my_file.txt --> my_folder/my_file.txt is the key to the object. and my_folder is the prefix.
+Value - this is simply data , which is made up of sequence of bytes
+        i.e: Files can be 0 to 5 TB (5000GB) in size.
+			 if uploading more than 5GB then must be broken to less than 5gb multipart upload
+Version ID - important for file versioning
+Metadata - data about the data being stored (key/value pairs)
+Tags - key value pairs upto 10 allowed -  useful for security /lifecycle
+Sub resources - Bucket specific configuration: Bucket policies, Access control List, Cross Origin Resource Sharing CROS and Transfer acceleration.
+
+S3 Storage Tiers/Classes:
+S3 Standard- 99.99% availability and 99.999999999% durability. Stored across multiple devices in multiple AZ. Can withstand even if 2 facilities go down at a time. used for requently accessed data. low latency and high throughput. use case : mobile gaming , content sharing , bug data analytics
+S3-IA (Infrequent Access) - 99.9% availability and 99.999999999% durability. For data thats access infrequently but needs rapid access when needed.Lower fee than S3 but required retrieval fee. use case : disaster recovery and backups.
+S3 One Zone IA - Same as S3-IA but data is present in only one AZ.99.5% availability and 99.999999999% durability. 20% less cost than S3-IA. use case secondary story of on premise data or data that can be recreated. entire data lost of one AZ is destroyed.
+Glacier Instant retrieval: very cheap used for data archival.  use case backups / archiving. instant retrieval fee . minimum storage duration is 90 days. milli second retrieval. 
+Glacier Flexible retrieval:  Expedited (1-5 mins retrieval time), Standard (3 to 5 hours) and Bulk (5 to 12 hours) free. minimum storage duration is 90 days.
+Glacier Deep Archieve: Standard (12hours) and Bulk(48 hours). min storage duratino is 180 days.
+S3 intelligent tiering: small monthly monitoring and auto tiering fee. moves object automatically between tiers. no retrieval fee. 
+						Frequent Access (default), infequent access (obj not accessed for 30 days), archieve IA ( obj not accessed for 90 days), archieve access tier (obj not accessed for 90 to 700+ days), deep archieve access tier (180 to 700+ days)
+S3 lifecycle  -  how objects in s3 can transition between tiers. this can achieved by transition actiion and expiration action.
+S3 Analytics - is used to determine when to transition objects from standard to standard_IA. does not work for one zone IA or glacier or deep archieve. used as first step to come up or better life cycle managment rules.
+
+
+S3 versioning:
+versioning is enabled at bucket level.
+so same key overwrite will increment the version : 1,2,3...
+benefits - protects aginst unintended deletes 
+		 - easy roll back to previous versions
+Before enabling version the version shows as null
+suspending versoning will not delete previous versioning just doesnt version going forward
+
+S3 Encryption:
+2 diferent types of encryption : Encryption in transit and Encryption at Rest
+- encryption in transit (also called encrption in flight) TLS/SSL i.e encrypts over network b/w your PC and S3. http and https s3 enpoints are exposed and we can use either. https is preffered, and it is mandatory in case of SSE-C.
+- At rest - Server Side encryption or Client side encrption
+	-Server Side encryption
+		-"S3- MasterKey" S3 Managed Keys. Each obj is encrypted with unique key with strong multifactored encryption. As an additional step the unique key itself is  	encrypted with master key which Amazon regularly rotate for you. AES-256 encryption type.
+		-"S3-KMS" AWS key Management service using . KMS comes with an  Envelop Key it is a key that encrypts your datas encryption key. Has an audit trail. 
+		-"SSE-C" Server side encryption with customer provided keys. AWS manages encryption and decryption but you manage your own keys.
+	- Client Side encryption : you encrypt the file your self before you upload it to S3.
+Enforcing Encryption on S3 Buckets: can be done by setting default encryption on so any object that gets uploaded will be encrypted by default.
+
+Every time a file is uploaded to S3, a PUT request is initiated.
+PUT/myfile HTTP/1.1
+Host:
+Date:
+Authorizaion:
+Content Type:
+Content Length:
+z-amz-meta-author:
+Expect:
+
+if the file is to be encrypted at upload time then x-amz-server-side-encryption parameter will be included in header. and there are 2 values for this parameter. 
+x-amz-server-side-encryption: AES256 (SSE-S3 - S3 mananged keys)
+x-amz-server-side-encryption: ams:kms (SSE-KMS- KMS managed key)
+
+Server side encryption can be enforced using bucket policy which denies any S3 PUT request which dosent include the x-amz-server-side-encryption parameter in request header.
+PUT/myfile HTTP/1.1
+Host:mybucket.s3.amazonaws.com
+Date:
+Authorizaion: authorization string
+Content Type:
+Content Length:
+z-amz-meta-author:
+Expect: 100-continue
+x-amz-server-side-encryption: AES256 
+
+S3 security:
+by default newly created buckets are PRIVATE so only the creater of the bucket will have access. 
+you can setup access control to your bucket using bucket policies (applied at bucket level) and access control list ( applied at object level).
+S3 buckets can be configured to create access logs. These logs can also be written to another bucket.
+
+user based:
+	IAM policies - which api calls are allowed for specific user/ group/ role
+resource based:
+	Bucket policies -  bucket wide rule from s3 console .( allows cross acount) 
+	Object Access control List (ACL) - fine grain access restriction at object level
+	Bucket Access control List (ACL) - fine grain access restriction at bucket level
+Note: an IAM principle can access S3 if IAM policy allows it OR resouce policy allows it AND there is no EXPLICIT deny.
+Bucket policy is a JSON file like below
+To include encryption to Bucket 
+{
+  "Id": "Policy1531513044034",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Stmt1531513034594",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:s3:::gveenith-s3",
+      "Condition": {
+        "StringNotEquals": {
+          "s3:x-amz-server-side-encryption": "aws:kms"
+        }
+      },
+      "Principal": "*"
+    }
+  ]
+}
+
+S3 website
+can host websites . but bucket policy needs to be pulic for it or else 403 error.
+website url is : bucketname.s2-website.region.amazonaws.com or bucketname.s2-website-region.amazonaws.com
+CORS policy should be set to allow cross origin resurce sharing.
+
+MFA delete
+Root user can enable / disable  multi factored authentication for important operations like permanent delete of an object or suspending versioning on the bucket.
+MFA is not needed for enabling versioning or listing deleted objects.
+mfa - delete can be currently enabled only through aws cli.
+
+S3 Access logs 
+we can create S3 buckets for access logs where any login and access of objects logs are logged for analytics purpose.
+S3 Replication - async process. Need proper IAM access. buckets can be in different account.
+CRR Cross region replication : complicance, disaster recovery, low latency , replicatio across accounts
+SRR Same Region replication : log aggregation, live replication between prod and test, disaster recovery
+Objects after replication setting on is only replicated. for old objects before turning on the setting there is a s3 batch process.
+can replicate DELETE markers by turning on settings cannot replicate permanently deleted objects to prevent malicious deletes.
+There is no replication chaining . a-b-c then no a-c
+
+S3 presigned url
+can generate using SDK , CLI or console
+default 3600 seconds (1 hour) , can customize by arg [TIME_BY_SECONDS]
+user same access as the person generating the pre signed url.
+use case: access premium content , generate url to dynamic end users, temp access to upload to a certain location etc.
+
+
+S3 Performance considerations:
+S3 baseline - automatically scales to highh request rates , latency 100-200ms.
+			  3500 PUT/COPY/POST/DELETE and 5500 GET/HEAD request per second per prefix n a bucket  . there is no limit to number of prefix in a bucket.
+S3 KMS limitation - if we use sse-kms then it uses kms generate data key (upload) and decrypt kms (download) api which causes kms limit. count owards kms quota (5500, 10000, 3000 req based on region). quota increase can be requested.
+S3 select & Glacier select - retrieve less data by using sql in server side filtering. simple sql stmts , can filter by rows /column. so less n.w traffic/cpu time, faster response time  and cost reduction.
+S3 Multi-part upload and Transfer acceleration - multi part upload helps in parallel uploads. transfer accelation helps in transfering files to an aws edge location which will forward the data to the target edge location (through fast AWS private n/w). compatible with multipart upload.
+S3 Byte Range Fetches - parallelize GET by requesting speific byte ranges . better resiliance in case of failure as only the failed byte range can be retried. can be used to retrieve only partial range of file.
+
+S3 events
+can create s3 events like s3:objectCreated, objectRemoved etc.
+these events can be used to notify different aws services like sqs, sns, lambda.
+These events can be made available to EVENT BRIDGE from where different rules can be set like advance filtering with json rules and sent to multiple aws services like kinesis, firehose , lambda etc.
+There are other event bridge capabitlities like archieve, reply , reliable delivery etc.
+
+S3 requester pays 
+S3 bucket owners owns the bucket cost as well as the neworking cost (associated with download) of the requester. But if needed owner can make requester pay for networking cost. for this the requester must be an authenticated aws account (not annonymous).
+
+Amazon Athena
+serverless SQL query service to perform analytics against s3 object. supports json , csv, orc, avro and parque files for querying. 5tb of data scanned to query costs $5. if data is comppressedor colmnar data then cost saving. can stream the queried data for reports too.
+
+S3 Lock Policy
+S3 Object Lock - versioning must be enabled for it. adopts WORM.
+	Object retention - retention period ( specify a retention period) and legal hold (no expiry date)
+	Mode - governance mode (users cannot overrite or delete obj versions or alter lock settings without special permission) and complaince mode - no one not even root can make any changes to the objs. no changes can be made to retention mode or policy.
+	
+Glacier Valut Lock - adopts WORM (Write Once and Read Many) models. lock the policy for future edits. helpful for complaince and data retention.
+
+------------------------------------------------------------------------------------------------------
+CloudFront & Global Accelerator
+------------------------------------------------------------------------------------------------------
+Amazon cloud front can be used to deliver your entire website  including static , dynamic, streaming and interactive content using a global network of edge location. request for your content is automatically routed to the nearest edge location where it can be cached so continent is delivered with best possible performance.	
+Along with this it also provides DDOS protection, and integration with AWS Web Application Firewall. 
+Can be configured to expose HTTPs externally and internally. 
+can be used as an ingres to upload files into S3. 
+you can restrict who accesses the distribution using witelist , blacklist, geo restrictions
+
+Terminologies:
+CDN - Content Delivery Network is a system of distributed servers(network) that delivers web page and other web content to users based on geographical location of the user, origin 	of web page and a content delivery server.
+Edge location - this is the location where content can be cached and also written. this is separate to an AWS region/AZ intact we have many more edge location than an AZ or AWS 	region. Edge location are not just read only you can also write files to them i.e PUT an object. Objects are cached in edge till TTL (time to live). you can clear cache 	(Invalidation) any time but you will be charged.
+Origin- This is the origin of the files that CDN is going to distribute. Origin can be an S3 bucket (origin access security is used to verify access) or EC2 instance (security groups)or an applicatoin load balancer or route 53.
+Distribution - this is the name given to CDN as consists of collection of edge locations. 2 types of distribution:
+	-Web Distribution - used by websites	
+	- RTMP - (Adobe) Real time messaging protocol , used for media streaming, flash multi media content 
+
+Cloudfront and S3 accelerated file transfer:
+AWS S3 transfer acceleration takes advantage of cloud front's globally distributed edge locations to reduce latency in S3 upload. as data arrives at edge location it is transferred to s3 over optimized network path thereby accelerating the file transfer.
+Note: If you want to restrict content to only certain users then you can use signed url signed cookies feature of cloud front. Cloud front also provides support to stop well know attacks like sql injection of cross site scripting using WAF (Web application firewalls)by filtering urls
+
+CloudFront Signed URL/cookies :
+signed url - access to individual file. 
+Signed cookies - access to a multiple files
+a policy with below is attached to CloudFront Signed URL/cookies 
+url expiration
+includes ip range  to access the data from
+trusted signers (which aws acount can create the signed url)
+
+CloudFront concepts:
+CloudFront signed url vs s3 presigned url : if content needs to be shared global (many regions), access to the path no matter the origin (EC2 . ALB, S3), can filter ip, path, date, expiration etc then cloud front signed url. where as if direct access to S3 giving same access as the IAM principle creating the url and to only select regions for limited timeframe then use s3 presigned.
+CloudFront cost - can reduce the number of edge location for cost reduction: Price class all region, price class 200, price class 100
+CloudFront Multi-origin - can be routed to different origin based on path . /images to S3 and /api to EC2.
+CloudFront Origin Groups - to increase availability an failover , origin group (one primary and one secondary for failover)
+ClourGront Field Level encryption - certain sensitive fields can be encrypted at edge location to provide additional security.(assymentric encrytion). uses , credit card fields 
+
+Global Accelerator:
+leverages aws internal network to rout to your app. 2 anycast ip (static ip) are created for your application. the anycast ip send traffic directly to the edge location and edge sends traffic to your app.
+works with ec2, alb, nlb,elastic ips , private and public. has consistent perfomance (intelligent routing, fast failover) , security and ealth checks.
+global Accelerator vs CloudFront - CF improves perfomance for both static and dynamic cachable content. content is served at edge. GA improves perofmance for app over TCP and UDP. proxying packets to app in aws through internal n.w lines. good fit for gaming , voice over ip, iot where static ips are needed.
+
+OLD NOTES :
+S3 optimization:
+>100 PUT/LIST/DELETE or >300 GET requests per second then amazon has certain best practices guidelines:
+GET intensive workload: use cloud front CDN to get best performance by caching in edge locations and this will reduce latency of GET request.
+MIXED request type workload - Key names we use may impact performance. random key names rather than sequential key names will help as when we use random prefix (like hex hash) to key names we can force S3 to distribute your keys to different partitions rather than keeping all keys in same partition thereby distributing I/O workload. 

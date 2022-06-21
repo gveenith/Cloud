@@ -1,0 +1,116 @@
+Encryption
+
+Encryption in flight (SSL) 
+DAta is encrypted before sending and decrypted after receiving. SSL cert helps in encyption (HTTPS). ensure no Man in middle attack.
+Encryption at rest
+Data is encrypted after being received by the server. data is decrypted before being sent. stored in ecrypted format (data key). encryption and decryption keys managed somewhere to which server will have access.
+Client side encryption
+data is encrypted by the client never by server both while sending and receing.
+
+AWS KMS (Key Managed Service)
+AWS manages key for us and is fully integrated with IAM. KMS is integrated with S3, EBS, RDS, Redshift, SSM etc. 
+Symmetric and asymmetric key available. Can create, rotate, disable, enable keys. an\ble to audit using cloud trail.
+data less than 4KB KMS can be used for encryption . for data more than 4kn use envelope encryption.
+To give access to KMS for an user make sure IAM poilicy and key policy allows that user. key policy if not defined then by default gives access to root hence to all users. make sure to provide proper policy.
+while copying encrypted snapshots across regions reencrypt with a key that is in the region top be copied and then copy it.
+while copying encrypted snapshots across acount , give access cross account access in KMS policy and then share the ecrypted snapshot. 
+
+Key Roation
+For customer managed CMK , automatic key rotation happens every 1 year. Previous key is kept active to decrypt old data. new key has same CMK ID
+Key can be rotated manually every 90, 180 days etc. new key has different CMK ID. previous key is active for decrypting old data. Alias usage is prefferd in this case. this solution can be used for keys that cannot be automatically rotated.
+Update Alis API can be used ot update key alias.
+
+Security
+
+SSM Parameter Store ( think config server)
+secure storage for configuration and secrets
+optional encrption using KMS
+serverless, scalable and easy to use using sdk
+version tracking of configuration & secrets.
+configuration management using path & IAM
+notification  using cloud watch
+ntegration with cloud formation
+GetPArameters or getPArametersByPAth API
+Standard and Advanced Tiers.
+in adv tiers we can assign TTL to configs and assign multiple policies.
+
+AWS Secrets Manager (think vault)
+Meant for storing secrets, capability to force rotation of secrets every X number of days. lamda can be used to automate the rotation of secrets.
+Integration with RDS (mysql, postgresql, aurora). secrets are encrypted using KMS.
+
+
+CloudHSM
+AWS provides encryption hardware. (Hardware Security Module). we manage the encryption keys not AWS. HSM key is tamper resistant.
+supports both symmentric and asymentric encryption. must use HSM client software. REdshift supports cloud HSM for db encryption
+good option for SSE-C. IAM permission needed for CRUD operation on HSM cluster. 
+spread across multiple AZ. great for availability and durability.
+
+AWS Shield
+provides protection againt DDOS attack
+standard - free service activated for every customer. provides protection againt DDOS attack.i.e layer 3/4 attacks.
+advanced - $3000 per organization. optional DDOS mititgation service. protection againt more sophisticated attack on EC2, ELB, route53, CF, CF accelerator. access to 24/7 DDOS reponse team. protects against higher fe during ddos attack.
+
+AWS WAF Web Access Firewall
+protects app against common web exploits (layer 7 - HTTP) like SQL injection and cross site scripting attacks(XSS)
+deine web acl and associate it to aws resources. Add rules and rule group (can use AWS managed or create own rule group). set rule rule priority. configure metrics. 
+WAF can be deployed with CloudFront, API Gateway and ALB.
+Define Web Access Control List (Web ACL) : rules can include IP addresses, HTTP headers, HTTP body or URI string.
+size constraint, geo match restriction.
+rate based rule (DDOS protection)
+
+AWS Firewall Manager 
+ manages rules in all accounts of an AWS organization.
+common set of rules for - WAF , Shield Advanced, security groups for Ec2, ENI resources in VPC.
+
+AWS GuardDuty
+intelligent threat discovery to protect AWS account. uses ML algo , anamoly detection nd 3rd part data to detect threats.
+gets logs from cloud trail, vpc flow logs, dns logs and eks to analyze and detect threats.
+if threats are detected can set up cloud watch event rules to notify using SNS or lambda.
+
+Amazon Inspector (like security and dynamic scans)
+Automated Security assesment for ec2 and ecr . reporting and integration with aws security hub. can send finding to amazon event bridge.
+
+Macie (detect PII)
+Amazon macie is a fully managed data security and data privacy service using ML and pattern matching discovery (helps in protecting sensitve data)
+helps in identifying and alerting when it detects PII information through cloudwatch events.
+
+------------------------------------------------------------------------------------------------------------
+KMS - Key Management Service - old notes
+------------------------------------------------------------------------------------------------------------
+create and control the encryption keys
+Encryption keys for KMS are regional
+integrated with EBC,S3,redshift,Elastic Transcoder,Workmail,RDS and few other AWS services. it is also integrated with cloud trail to give logs of all key usage.
+Customer Master Key: CMK (can never be exported)
+alias
+description
+key material (customer managed CMK i.e your own key material or AWS managed CMS ie KMS generated key material)
+creation date
+key state
+
+Envelope encryption
+The customer Master key is used to decrypt the data key (envelop key). Envelop key is used to decrypt data.
+Customer Master Key - the primary resources in KMS are customer master key which is used to encrypt and decrypt up to 4Kb of data. Typically we use CMKs to generate, encrypt and decrypt data keys which is used outside of KMS to encrypt your data.
+Customer managed CMK - AMW KMS generates a master key know as customer master key which is used by customer to externally encrypt or decrypt data. 
+AWS managed CMK - AWS will create , manage and use with integrated AWS services.
+Data Keys - Data keys are encryption keys that you use to encrypt your data. these keys are managed outside of KMS. They are created using below logic:
+
+CUSTOMER MASTER KEY (KMS)-> ENCRYPTION ALGORITHM (INPUT PLAIN TEXT) -> ENCRYPTED DATA KEY.
+aws kms encrypt --key-id ENTER KEY --plaintext fileb://secret.txt --output text --query CiphertextBlob | base64 --decode > encryptsecret.txt
+
+Encrypt data using Data key - use the encrypted data key to encrypt the data and then store the encrypted key and encrypted data for decryption later on. remove plain text data key from memory as soon as possible.
+Decrypt - decrypt the encrypted data key using CMS key and this gives plain text data key.  
+
+aws kms decrypt --ciphertext-blob fileb://encryptsecret.txt --output text --query Plaintext | base64 --decode > decryptencryptsecret.txt
+
+use plain text data key to decrypt the data. remove the plain text key from memory soon.
+aws kms re-encrypt --destination-key-id ENTER KEY --ciphertext-blob fileb://encryptsecret.txt | base64 > newencryption.txt
+If you want to rotate your key the you can use this command.
+aws kms enable-key-rotation --key-id ENTER KEY
+
+Key manager : once who manages the CMK
+Encrypter : on who can perform encryption and decryption using CMK.
+
+Envelope encryption: 
+Once you encrypt your data your data is protected after this you have to protect your encryption key . one strategy is encrypt it . so we can encrypt this encryption key (data key) [encrypted data key is called envelop key] using another key and this key is called master key and this is called envelope encryption. AWS KMS can store this master key. 
+
+-----------------------------------------------------------------------------------------------------------

@@ -1,0 +1,42 @@
+ECS Elastic container service 
+Launch ECS Docker contianers on AWS = launch ECS Tasks on ECS cluster
+
+Infrastructure:
+    EC2 instance Lanch Type
+Each EC2 instance must have the ECS Agent to register ECS cluster
+AWS takes care of starting and stopping container
+ECS Agent uses IAM role to connect to ECS , ECR, clouwatch and secretmanger.
+ECS task in the ECS cluster has ECSTASK roles to perform specic roles like accessing s3 (has ECSTASK A role), access dynam0db( has ECSTask B role)
+Task Role is defined in task definition.
+
+    Fargate Launch Type
+Launch Docker contianer in AWS (No EC2 instance, serverless , amanged by AWS)
+Task deinitions are created and AWS runs the ECS tasks for you based on CPU/RAM you need.
+its scales as the number of tasks increases.
+
+
+Load Balancer
+CAn have application load balancer through which request can be routed to ECS Tasks. (Recommended). 
+Network load balancer can also be use if there is need for high throughput/ high perfomance use case.
+Elastic Load Balancer is supported but not recommended( no adv features , no fargate )
+
+Auto Scalling 
+using AWs Auto Scalling service, Automatically increase/decrease ECS tasks. this can be done depending on ecs service avg cpu utilization,memory utiliation, alb req count per target.
+Target tracking by based on specific values in cloud watch metrics.
+Step scalling by cloud watch alarms 
+scheduled scalling 
+
+Rolling Updates are possible by setting min and max health percentage of intances.
+
+ECS task scalling is not equal to ECS cluseter scalling . hence fargate is a better solution to EC2 instance launch type.
+If we have EC2 instance launch type in cluster and we want to autoscale then we can use auto scalling group  or ECS cluster capacity provider (recommended) which will scale instances using ASG based on certiain capacity metrics like 
+Data Volumes (EFS)
+CAn mount EFS to ECS TAsks (Both ECS2 and FArgate). this will help in persisting data across AZ.
+S3 CANNOT be mounted and Fsx for luster is not supported.
+
+ECR - elastic container register is used to store and manageimages (public (galary) and private repo). you can tag , image vulnerability scanning, versioning , image lifecyce.
+Access is controlled through IAM. ECS is full integrated with ECS and backed by S3.
+
+EKS Elastic Kubernetes Service - used to launch manged kubernetes cluster in aws. kubernetes i used for automatic deployment scalling and management of containerized docker app.
+alternative to ECS.EKS also supports EC2 and fargate . it is cloud agnostic.
+Eks node runs Eks pod and EKS serive load balancer.

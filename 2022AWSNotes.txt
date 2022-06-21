@@ -1,0 +1,689 @@
+Compute
+Compute
+EC2 “Elastic Compute Cloud” - they are VM machines inside club platforms . There can be physical machines too
+EC2 container service - run and manage docker container at scale
+Elastic bean stock - developers who don’t understand AWS and just upload their code . Then Elastic bean stock will go through and provision , load balance EC2 instances so that developer just concentrate on code.
+Lambda - Lambda is a code that we can upload to cloud after which we can control and it executes. we don’t need to worry about VMs and underlying services. all we need to worry about is code. 
+Lightsail - is amazon’s Virtual private service service. This is designed to provision users with server it will give you with fixed ip address and RDC access for windows and consoles to manage service . it is a watered down version of EC2. 
+Batch - used to do batch computing.
+
+Storage
+S3 “Simple Storage Service” - Upload Objects (files) to buckets (directories) in cloud. One of old service
+EFS “Elastic File system“ - Network attached storage so we can store go and store files in an EFS volume and mount that to multiple VM’s 
+Glacier - Data archival 
+Snowball - Used to bring in large amount of data to AWS data center instead of transferring through wifi as physically transferring data is fast in this case due to huge volume of data.
+Storage Gateway - Virtual appliances that are installed in DC that will replicate data back to S3. 
+
+Database
+RDS “Relational Database Service” - mysql , postgress sql, aurora, oracle etc basically any relational DB will sit inside it.
+Dynamo DB - Used for non relational data bases
+Elasticache - Is a way of caching commonly  used sql query. so db will be free to perform other query.
+Red Shift - is for data warehousing or BI where we will be doin complex queries. 
+
+Migration
+AWS Migration Hub - Tracking service to track app as you migrate to AWS services and also integrates to others serves in framework.
+Application Discovery service - Automated set of tool to detect what apps we have and the dependency it needs.
+Database Migration service - Helps to migrate DB from on premise to AWS.
+Server Migration Service - Helps to migrate VM and physical servers to AWS cloud.
+Snowball - used to migrate lager amount of data to Cloud we are speaking in tera bytes.
+
+Networking & content Delivery
+VPC “Virtual Private Cloud: - Virtual Data center. We go in and configure Availability zone, network address ranges , route tables , network ACLs etc.
+Cloud Front - Cloud Front is Amazon’s Content delivery network . it  stores media files like video files or image files in location closer edge locations of users instead of users accessing them from a long distance locations.
+route53 - is amazons DNS service 
+API Gateway - is way of creating own API for other services to talk to.
+Direct connect - Dedicated line from corp head office or Data center to Amazons and it will directly connect into your VPC.
+
+Developer Tools
+CodeStar - is way of getting group of developers to work together easily. setup code , continuous delivery tool chain etc.
+Code commit - source control service
+Code build - will compile code and run tests against it and then will produce software packages ready to deploy
+Code deploy - Automates application deployment to EC2 instances as well deployment to on premise instances as well to lambda instances as well.
+code pipeline - continuous delivery service to model and visualize and automate setps to release software
+Xray - to debug and analyze server less applications , it has request tracing to find root causes to issues and address perfomance issues.
+Cloud9 - IDE environment to Develop code inside AWS console (in web browser).
+
+Management 
+CloudWatch - Monitoring service. sysopsops use it extensively
+CloudFormation - It's a way of scripting infrastructure. Solutions Architects used it extensively.
+CloudTrail - any changes or we are doing something in cloud then we trigger API in cloud env then cloud trail will capture it. 
+Config - Monitors the configuration of entire AWS environemnt.
+OpsWorks - Similar to Elastic Beans but a lot more robus . Its  way of automating environemts so all the configuration of environemts are there. 
+Service Catalog - a way of managing a catalog of IT services like databases , VMs, OS, inducidual systems etc.
+Systems Manager - Interface to manage AWS resources typpicallysed used by EC2 instances. 
+Trusted Advisor - would give advice about security , how to save money , wil tell you if we leave any port open, tell if we havent used more AWS servies. Basically like a secretary.
+Managed Services - Amazon affers Managed services for thier own AWScloud so we not need to wory about EC2 instances or scaling.
+
+Media Services
+Elastic Transcoder - Takes the video files makes it look good across platorms.
+Media convert - File based video transcoding service with broadcast video features. allows to create video on demand content for  broadcast and stream across multiple screens.
+Media Live -   Creates high quality video streams to braodcast to internet connected devices 
+Media Package - Prepares and protects videos for delivery over internet.
+Media Store - great place to Store media. gives good perfomance lowers latency.
+Media Traior - Allows to do targetted advertising without compromising on bradcast level quality of service
+
+Machine Learning
+Sage Maker - Makes Easy for developers to use deep learning when coding for environemnt.
+Comprehend - Does sentiment analysis around data of your product.
+DeepLens - Artificially aware camera. Camera itself can recognise whats infront of it. It's a physical piece of harware.
+Lex - It powers the Amazon Alexa service . Lex is a way of communicating with cusotmers.
+Machine Learning - Through a dataset into AWS cloud and it will analysis and give an outcome. like amazon's suggested item while ahopping.
+Polly - Takes text and turns it into speach.
+Rekognition - it tell whats in the file. it will recognise and tell what is in the picture with percentage acuracy. 
+Amazon Translate - Translate languages.
+Amazon Transcribe - Automatic speach recognition. Speach to Text
+
+Analytics
+Athena - Allows to run SQL query against things in your S3 bucket. completely Serverless no infrastructure to manage.
+EMR - Used for Processing large amount of data ( big data solutions)
+cloud Search - search services for AWS
+elastic Search services  - search services for AWS
+Kinesis - is way of ingesting large amount of data into AWS like social media feeds 
+Kinesis Vide Streams - ingest large amount of video data into AWS
+QuickSight - Business Intelegince tool 
+Data Pipeline - is a way of moving data between different AWS services.
+Glue - used to Extract, Transform and Load large amount of data 
+
+Security & Identity and Compliance 
+IAM "Identity Access Management" 
+Cognito - Device Authentication
+GuardDuty - Monitors AWS account for Malicious attach.
+Inspector - is an agent that need to install in VM's or EC2 instances and a tests can be run on them like does my EC2 instances have security vulnarabilites and Inspector will give you a report.
+Macie - Will scan S3 buckets for Personally identifiable information (PII) and send alert 
+Certificate Manager - is used to manage SSL certificate.
+CloudHSM "Hardware Security Module" - dedicated piece of harware to store private/public keys. 
+Directory Services - Way of integrating MS active directory services with AWS services.
+WAF "Web Applicaiton firewall" - its like a firewall layer whch stops things like cross site scirpting , sql injection so it monitors application level and sees if user is acting malicious if it needs to intervene to prevent any attack.
+Shield - Shield is used to prevent DDOS attack. 
+Artifact - this tool is good for audit and compliance . its a portal to download on demand AWS compliance report. Basically download and understand amazon documentation.
+
+Mobile Services 
+mobile Hub - Management console . We can create mobile hub and it basically setup AWS services for you and generates cloud configuration file then we can use AWS clud SDK  to connec to AWS backend.
+Pinpoint - targetted push notification to drive customer engagement. 
+AWS App Sync - Automatically updates data in web and mobile in real time and also updates data for offline users once they connect back.
+DeviceFarm - is a way of testing apps in real live devices so this could be iphone or android etc. 
+Mobile analytics - is analystics for mobile devices 
+
+AR/VR code name Sumerian
+common set of tools used to create AR/VR 
+
+Application Integration 
+Step Functions - this is way of managing lambda funtionas and diffrent functions/steps to go through it.
+amazon MQ - Amazons version of using MQs
+SNS - Simple Notification Service 
+SQS - simple Queue SErvice . Decoupling your infrastructure 
+SWF - simple workflow service . 
+
+Customer Engagement 
+Connect - contact center as a service i.e like a contact center in cloud .
+Simple Email Service - Amazon's email service 
+
+Business Productivity
+Alexa For business - WE can use alexa for doing whole bunch of things with respect to business like joining a meeting , reporting a broken printer to IT etc .
+Chime - video conferencing 
+Work docs - like a drop box for AWS.
+WorkMail - this is amazons was of microsoft ofice 365
+
+Desktop and app streaming 
+Workspaces - is a VDI solution
+App Steam 2.0 - is a way of streaming applications . App is running in cloud but gets streamed in your device [ like citrix does]
+
+IOT 
+iOT "Internet of things" - electronic devices can send in informations like sensor temerature or videos or audios etc.
+iOT Device Management - electronic devices can send in data/inputs and managing at large scale can be difficult and that where IOT device management comes in and it can be managed it.
+Amazon FreeRTOS - operating system for micro controllers. 
+Greengrass - is a software that lets you run  local compute messaging , data caching , sync and machine learning capabilites for connected devices in a secure way.
+
+Game Development
+GameLift - service to help develop games. This can be Vr games as well and can be hosted in cloud.
+
+--------------------------------------------------------------------------------
+
+IAM - Identity Access Management 
+Manage users & groups and their level of access to the AWS console.
+Gives you :Centralised control of your AWS account 
+Shared access to your AWS account 
+Granular Permission 
+Identity Federation
+Multifactor Authentication 
+Temp access for users/devices and services where necessary
+set up own password rotation policy
+Integrates with many different AWS services
+Supports PCI DSS compliance 
+
+Important terminology :
+User
+Group
+Roles
+Policies: 
+vre
+JSON{
+"Version": "2012-10-17"
+"Id":"S3-Account-Permission"
+"Statement":[
+	{
+	  "Sid":"1",
+	  "Effect":"Allow"
+	  "Principle""{
+		  "AWS": ["arn:aws::iam:12345]
+	  }
+	  "Action": [
+		  "S3:GetObject",
+		  "S3:PutObject"
+		  ],
+	  "Resource": ["arn:aws:s3:::mybucket/*"]
+	}
+]
+
+}
+
+IAM is used to define user access permission within AWS. There are 3 types of IAM policies:
+1. Managed Policies - is created & managed by AWS itself. you can't edit or change the permission defined in it. you can just assign it to single or multiple user, groups and roles.
+2. Customer Managed Policies - is standalone policy that you create and administer inside your own aws account. you can attach it to multiple users, groups and roles. basically its taking an existing managed policy and customizing it to meet you account needs. 
+3. Inline Policies - it is embedded within a single user, group or role. strict 1:1 relationship. if the user/group/role to which the inline policy is embedded, then policy itself is deleted. AWS recommends to use managed policy over inline policy.
+
+Web Identity Federation
+Lets you give access to users to AWS resources after they have successfully authenticated with web based identity providers like fb, google, amazon. the user first authenticates with web identity provider and upon successfully authentication it gives an authentication token which can be traded for temporary AWS credentials allowing them to assume IAM role.
+Amazon COGNITO is an Identity Broker which handles interaction between your application and Web Identity providers. (you don't need to write code in app).It has following features:
+sign up and sign in to apps
+access for guest users
+acts as identity broker between your app and web id providers.
+syncs your data with multiple devices.
+cognito is the recommended approach for web identity federation particularly for mobile apps.
+
+User Pools: are user directories used to manage sign in and sign up functionality for mobile and web applications. users can sign in directly to user pool or indirectly through web identity providers. upon successful authentication a JWT(JSON web token) is generated. cognito acts as Identity broker between web identity providers and AWS.
+Identity Pools: enables you to create unique identity for your users and authenticate them with identity providers, you can obtain limited temp privilege to access AWS resources.
+
+So an user first login into fb or google and get the JWT token which gets added to user pool. then cognito identity pool exchanges this jwt token to give temp access to other aws resources. Cognito manages all these no seperate code needed.
+
+Cognito also tracks association between user identities and various devices they sign in from. cognito uses silent push synchronization to push updates and sync user data crop various devices. Amazon SNS is used to send PUSH notification to various devices associated with a given identity when data changes in cloud. 
+
+----------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------
+S3 CLI
+
+ssh into your ec2 instance
+sudo su
+aws configure - to provide id and password of the user to create the s3.
+give access key id of user
+give secret access key
+region
+format
+now you have access to create s3.
+you can create(make a bucket) by using :aws s3 mb s3://bucketname
+
+Least permission - give the user minimum required access
+Create groups - assign users to groups. users will automatically get permissions of the group. group permission are assigned according to policy doc.
+Secret access key - you can see secret key only once. you lose it then delete key pair and regenerate again. after this run aws configure again.
+Do not use one access key across users. give separate access key pair for each user.
+
+Its best practice to create a role give s3 permissions and add users to that role and later on use that role to perform S3 actions.
+--------------------------------------------------------------------------------------------------------------------------------------------
+RDS -   Relational Database Servers
+Relational (db, table, row, column) [MySQL server, Microsoft SQL server, Oracle, PostgreSQL, Amazon Aurora ] 
+vs 
+non relations databases (db, collection, documents, key value pair)  [NoSQL] -> DynamoDB
+Data warehousing - Used for business intelligence . Tools like Cognos, Jaspersoft etc. uses very large data set to prepare reports.
+OLTP - Online Transaction Processing -> Dynamo DB
+OLAP - Online Analytics Processing -> Redshift
+Elasticache - in memeory cache in cloud. eg: Memcached, Redis
+
+***LAB****
+To create RDB Step 1: select the DB engine (eg:mysql)and then step 2: specify DB details like License model, DB engine version, DB instance class, storage type, allocated storage, Multi AZ deployment also give Settings information like DB instance identifier, username and password.And finally Step 3: configure advance settings like Network & security, Database options, Log exports, Monitoring, Maintenance, Backup and Encryption.
+
+
+Backups, Multi AZ & Read Replicas:
+2 types of RDS AWS back up: Automated backups and Database snapshots
+Automated Backups: Allows you to recover your database to any point in time down to second within a "retention period". The retention period can be within 1 and 35 days. It will take full day snapshots with transaction logs. Automated backups are enabled by default and are stored in S3 equal to size of your database. Backups are taken within a defined window. May experience slow latency during the time of backup.
+Snapshots: They are done manually. They are stored even after deleting the original RDS instances unlike automated backups where it get deleted with RDS is taken down.
+When ever backup is restored the restored version of RDS will be a new instance with new DNS endpoint.
+
+Encryption:
+Encryption is done using Key Management Service (KMS). Once RDS is encrypted the data stored at rest in underlying service is also encrypted as are its backups, read replicas and snapshots. At present encryption of existing RDS is not supported. It can be done only by taking snapshot of RDS and making a copy of the snapshot and encrypt the copy.
+
+Multi AZ - IS for Disaster recovery only and not for performance improvements. Allows you to have exact copy of DB in another availability zone. AWs handles the replication so the data is sync always. and it can fail automatically to the stand by DB in AZ without manual intervention.
+Read Replica - Asynchronous replication from primary RDS to read relica allows us to have read only copy of production data base.this is used primarily when there is very heavy ready only action in DB. It is available for MySQL, PostgreSQL, Maria DB and Aurora. It is used for Scaling and not for Disaster recovery. Automatic backs must be turned on ignorer to use it. there can be 5 read replicas max of any db. you can have read replicas of read replicas (but increases latency) but each replica will have unique DNS endpoint. 
+You can have and create read replicas on instances that have Multi AZ. Read replicas can be promoted to become their own databases but this will break the replication. finally you can have read replica in second region . 
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------
+Lambda
+-----------------------------------------------------------------------------------------------------------
+Lambda is a compute service where you can upload the code and create a lambda function. Lambda takes care of provisioning and managing the servers that you use to run the code. you don't have to worry about your operating system, scaling, patching etc. you can run lambda in 2 ways:
+	- As an event driven compute service: where AWS lambda runs your code in response  to the events. these events can be change to data in s3 etc.
+	- As a compute service to run your code in response to HTTP request using Amazon API gateway or API calls made using AWS SDK.
+Languages Supported: Java, C#, Node.JS, Go and Python.
+Price : is based on number of request and Duration.
+	- first 1 million requests and 400,000GBs of compute time are free and $0.20 per 1 million requests thereafter or $1 per 600,000GB seconds compute time.
+	- duration is calculated form the time your code begins executing until it returns or otherwise terminates, rounded up to nearer 100 ms. the price depends on the amount of 	  memory you allocate to your function. you are charged $0.00001667 for every GB-second used.
+
+NO SERVERS, CONTINUOUS SCALING, SUPER CHEAP.
+
+1. Lambda scales out(not up) automatically. i.e you can have million of functions running in parallel and in case you run out of memory you need to update the amount of memory that lambda uses.
+2. Lambda functions are independent. 1 lambda = 1 function.
+3. Lambda is serverless.
+4. know what services are server less. 
+5. lambda functions can trigger other lambda functions 1 event can trigger x lambda functions. 
+6. Architecture can get extremely complicated and x-ray is used to debug.
+7. Lambda can do things globally, you can use it to back up a S3 bucket to another S3 bucket.
+8. can scale resources per functoin (upto 10GB of RAM). increasing RAM improves CPU and n/w
+9. node.js , phyton, java, c#, go lang, C# powershell, ruby , custom runtime api  etc are supported. 
+10. lambda container images can also be created . the ocntiner must implement lambda runtime api. if arbitary docker continer image then ecs/fargate preffered.
+
+limits
+memory- 128MG - 10240MB (10GB) , increments happens in 1MB increments.
+timeout (min and max execution time) 0seconds -15mins (900 seconds)
+4k of environemnt variable allowed.
+disk capcity in the functions continer (in/tmp) to pull in temp files : 512 MB
+1000 concurrent executions (can be increased)
+needs execution role.
+lambda function max zipped size is 50MB and uncompressed is 250MB for deployment.
+Can use tmp file to load files needed for start up 
+
+Monitoring - metrics , logs, traces availble.
+
+Lambda can be triggered by following:
+Amazon API gateway
+AWS IOT
+Cloudwatch events bridge
+Cloudwatch logs
+Codecommit
+Cognito sync trigger
+Dynamo DB
+Kinesis
+s3
+SNS
+SQS
+cloudfront
+
+Lambda@Edge - you can integrate lambda with cloudfront by deploying them alongside cdn at edge locations to perform various activities like request transformation , filtering or other operations in more responsive manner.
+use case : website security and privacy, dynamic web application at edge, search engine optimization, bot mitigation at edge, intelliget routing to data centers, etc.
+
+
+Amazon API Gateway: is a fully managed service that makes it easy for developers to publish, maintain, monitor and secure API at any scale. with few licks in amazon console you can create an api that acts as a front door to access your data base, business logic or functionality form back end services such as apps running in EC2 or lambda functions. 
+API gate way is low cost and can scale automatically.
+you can throttle api gateway to prevent attacks.
+you can log results using cloud watch. 
+if you re using js/ajax that uses multiple domain gateway then ensure you enable CORS on API gateway. 
+CORS is endorsed by the client.
+handles security (Authenticatoin and authorization)
+support for websocket protocols
+API caching: can enable api caching in api gateway to cache your endpoints response. this will improve latency and increase performance of your api. 
+Versioning: with versioning in Lambda we can publish one or more version of your lambda function i.e dev, beta and production. Each lambda function variation has a unique Amazon Resource Name (ARN) and after you publish your version it becomes immutable. Lambda maintains latest function code in $LATEST version.
+API Throttling:
+By default, API gateway limits the steady state request rate to 10,000 request per second.
+the maximum concurrent request is 5000 request across all API within an AWS account. 
+if you go over 10,000 request per second or 5000 concurrent request across all aPI we will get a 429 Too many request error response.
+
+
+API types - http api , rest api , private rest api , websocets 
+can create new api or improt from swagget/open api 3.
+API Gateway Endpoint type:
+ 	Edge Optimized (default)- for gloabl clients . reqs are routed through cloudfront edge locations. api gateway still lives in only one region only.
+	REgional - for client within same region 
+	private api gateway - can be accesed only by vpc using vpc endpoint (ENI). uses a resource policy to define access.
+Api Gateway Integration types: lambda, http, aws services, vpc link, mock.
+Api Gateway Security - 
+	IAM Permissions - IAM policy authorization can be created and ttached to user/role which API Gate way will verify with IAM and only then allow to pass to backend. the IAM role will come as part of header to API gateway from calling service. This leverages SIG V4 capability.
+	Lambda Authorizer (Custom Authorizer) - uses AWS lambda to validate the token in header being passed. can cache the authentication itself. is helps in using 3rd party authentication like OAuth,SAML .Lambda will return IAM policy for user.
+	Cognito User Pool - Cignito helps only with authentication and not with authorization. Cognito will manage user lifecycle. consuming api will call cognito and authenticate the user with a tokem. this token is sent to Api gateway which will verify with AWS cognito to confirm authentication and send the request to back end. back ends will have to check for authorization.
+
+ARN:
+There are 2 types of ARN:
+	- Qualified ARN - the function ARN with version suffix (arn:aws:lambda:aws-region:acct-id:funtion:helloworld:$LATEST)
+	- UnQualified ARN - the function ARN without version suffix (arn:aws:lambda:aws-region:acct-id:funtion:helloworld)
+
+Alias:After creating a version of lambda function ($LATEST), you can publish a version 1 of it. by creating n alias named prod that points to version 1 you can now use prod alias to invoke version 1. after enhancements or upgrades if you decide to publish the function to version 2 then you can promote version 2 to production and remap prod alias to point to version 2 and incase of any issues with version 2 then you can easily roll back to version 1 by remapping prod alias.
+Can split traffic using alias between 2 versions. cannot split traffic with $LATEST, instead create an alias to latest.
+
+IMPORT API: you can use API Gateway import API feature to import an API from an external definition file into API Gateway. Currently the import feature supports SWAGGER 2.0 definition file. With import api you can 
+create a new API by submitting POST request that includes SWAGGER definition in payload and endpoint configuration.   
+update existing API by using PUT request with SWAGGER definition in payload 
+and merge a definition with existing API.
+you can specify the option using a MODE query parameter in request URL.
+you can configure API gateway as a SOAP web service passthrough.
+
+SAM Serverless Application Model - is yaml code configuration for developing and deploying serverless application. SAM can also be used to run coe locally. SAM can use code dploy to deploy lambda functinos.
+
+AWS Cognito
+Cognito user Pool 
+Cognito identity pool(federate identity)
+Cognito sync - deprecated and right now called appSync
+-----------------------------------------------------------------------------------------------------------
+STEP FUNCTION
+Great way to visualize your server less application.
+Step function automatically triggers and tracks each steps.
+Step function logs he state of each step so if something goes wrong you can track what went wrong and where.
+--------------------------------------------------------------------------------------------------------------
+X-RAY
+AWS X- RAY is a service that collects data about requests that your application serves, and provides tools you can use to view, filter, and gain insights into that data to identify issues and opportunities to optimize. For any traced requests to your app, you can see detailed information not only about the request and response, but also about calls that your application makes to downstream AWS resources, micro services, databases and HTTP web APIs. 
+
+X-RAY SDK provides:
+Interceptors - to add to your code to trace incoming HTTP requests.
+Client Handlers - to instrument AWS SDK clients that your application uses to call other AWS services.
+An https Client to use to instrument calls to other internal and external http web services. 
+
+X-RAY INTEGRATION:
+It integrates with following AWS services:
+Elastic Load balancers
+AWS lambda
+Amazon API Gateway
+Amazon Elastic Compute Cloud
+Amazon Elastic Beanstalk
+
+LANGUAGE SUPPORTED: java, Python, Go, Node.js, Ruby, .NET
+-----------------------------------------------------------------------------------------------------------
+DYNAMO DB 
+-----------------------------------------------------------------------------------------------------------
+Fast and reliable NOSQL database for all apps that need consistenet single digit millisecond lateancy at any scale.
+Fuly managed database and supports document and key value data models.
+Flexible data model and reliable perfomance makes it a great fit for mobile , web, gaming, ad-tech, IoT and many other apps.
+Stored on SSD storage
+Spread on 3 geologically disticint datacenters.
+Synamo DB streams for event driven programming
+2 consistency models:
+	- Eventual Consistent Reads (default) : consistency across all copies of data is reached within a second. REpeating a read after short time will give updated data ( Best read perfomance)
+	- Strongly Consistent Reads : If you want guaranteed certain value then use this. it returns a result that reflects all writes that received a successful response  prior to the read.
+
+Tables
+Items (think row)
+Attributes (think column)
+Supports key value pair and document
+key is name of the data, value is data itself.
+document can be written in JSON,HTMLor XML
+
+Primary Keys:2 types
+-Partition Key -  unique attribute eg User ID. value of partition key is input to internal hash function which will decide if the partition or physical location where data is going to be stored. If you are going to use partition key as primary key then no items can have same partition key.
+-Composite Key -  combination of Partition key + Sort Key . eg same user id posting in a forum. user id is partition key and it can be same but timestamp will be the sort which will be different. all items with same partition key are stored under together , then sorted according to sort key. 
+
+Access Control
+authentication and access control managed by IAM. can create users  using IAM who can then access dynamo db or create roles which can be used to grant temp access to AWS services like DynamoDB . can use "IAM condition" to restrict users to only their own record. dynamodb: LeadingKeys:
+
+UnrecognizedClientException - there is no authorization for EC@ which calls dynamodb to get items. 
+
+Indexes enable fast queries on specific data columns.
+2 types of Indexes: Local Secondary Index and Global secondary Index.
+Local Secondary Index - can only be created only when you are creating a table and cannot be added, removed or modified later. It has same partition key as original table but different sort key. and this organizes the view according to sort key. any query based on this sort key will be faster in this index table rather than using the main table.
+Global Secondary Index - can create when you create a table or add it later . Different partition and sort key. speeds up query relating to partition as well as sort key. 
+
+Query:
+A query operation finds items in a table based on the Primary Key attribute and a distinct value to search. can use sort key value to refine results.
+You can limit the attributes retured by query by providing ProjectionExpression parameter. 
+Numeric or ASCII characters are sorted order by default is ascending (1234). you can reverse the order by setting ScanIndexForward parameter to false.
+By default, Queries are evetualy consistent. you can set them to be strongly consistent but you need to explicitly specifiy it.
+
+Scan:
+A scan operation examines every item in table. by default returns all attributes and we can use ProjectionExpression parameter to refine scan to return only the attributes we want. To make it more efficient you can isolate scan operation to specific table and segregate them from your mission critical traffic or try running parallel scans rather than default sequentiual scan. 
+
+Query is more efficeint than a scan as scan dumps the entire table ans then applies filter on the values to provide desired results. As table groes scan operation will take longer time. you can increase the perfomance by setting smaller page size which uses fewer read operations. larger amount of smaller operations will allow other requests to succeed witout throttling. Avoid scans , try using query, get ot batchgetitems api.
+
+aws dynamodb get-item --table-name TABLENAME --key 
+
+Dynamo DB Provisioned Throughput:
+Dynamo DB provisioned throughput is measured in Capacity units. 
+when you create your table you can specify the requirement in terms of read or write capacity units
+1 * write capacity unit  = 1 * 1KB write per second
+1 * Read capacity unit = 1 * strongly consistent read of 4kb per second
+		      or 2 * Eventually consistent read of 4kb per second (Default)
+
+Dynamo DB Accelerator (DAX):
+Fully managed, clustered in-memory cache for Dynamo DB. Delivers 10* read performance improvement. 
+just takes microseconds for millions of requests. Ideal for read heavy and bursty workloads. 
+DAX is a write-through caching service - this means data is written to db as well as cache at the same time. 
+you can point your dynamo db api calls to point to DAX cluster. so if querying item is in cache first then DAX returns it to the app. 
+If item is not available in cache then it performs eventually consistent get item operation on DynamoDB and updates the cache. 
+Not suitable for strong consistency read or write heavy apps or apps that do not perform a lot of read or apps that do not require microsecond response.
+5 mins TTL for cache (default)
+
+Elasticache: 
+ElastiCache is a web service that makes it easy to deploy, operate and scale a in memory cache in cloud. 
+improves perfomance, takes load off db.
+good for read heavy and data NOT changing frequently situations.
+frequently accessed data are stored in memory for low latency access thereby improving overall performance of your app.
+good for compute heavy workloads or i/o intensive operations.
+2 types of elasticache:
+Memcached - memory object caching system. simple caching solution. auto scaling is easy. no persistence. multithreading performance with usage of multi cores then memcached is best.
+no Multi AZ capability.
+Redis - in memory key value store that supports data structure like hashes, set and lists. also supports sorting and ranking [eg:leaderboard scenario] .It also supports master/slave replication and redundancy across availability zones hence amazon manages reddis as more like relational db. managed as stateful entities with failover.
+Caching Strategies:
+Lazy Loading: stores data in cache only when necessary. if data not in cache or expired then returns null. app fetches data from db and writes to caches (cache miss penalty). Doesn't automatically update data when data in db changes. so when elastic cache node fails then there is a lot of cache misses. Time to live (TTL) specifies the number of seconds until the data expires to avoid keeping stale data in cache. Lazy loading treats an expired key as cache miss and uses app to retrieve data from the data base and subsequently write to cache with new TTL. this method doesn't not eliminate state data but help avoid it.
+Write Through: add or update cache when ever data is written to database. so data in cache is never stale but the down side is write penalty i.e every write to db is a write to cache as well. 
+
+dynamo DB Streams
+ordered stream of item level modifications (create/update/delete) in a table
+Stream records can be :
+sent to kinesis data stream, read by lambda, read by kinesis client library application
+data rentention upto 24 hours
+use case; react to changes in real time ,analytics , insert into derivative table, implement cross region replication
+
+dynamodb global tables 
+makes dynamo db table accessible with low latency in mutiple regions. Acitve active replication.
+apps can read and write to tables in any region.
+must enable dynamo db for data replication as a prerequisite.
+
+dynamo db transaction management is also available.
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------------------------
+SES - Simple Email Service
+is a scalable and highly available automated email service designed to help marketing teams, transactional emails, shipping confirmation etc. can also be used to receive emails.
+-------------------------------------------------------------------------------------------------------------------
+Simple Token Service 
+Grant users simple and temporary access to AWS resources.Users can come form 3 sources 
+1. Federation (typically active Directory) - uses SAML “security assertion Markup Language” . Grants temp access based off users AD credentials. Does not need to be user in IAM. SSO allows users to sign on to AWS without assigning IAM credentials.
+2. Federation with Mobile apps - uses Google/Amazon/FB other open ID providers to log in 
+3. Cross Account access - users form one AWS account access resources of other account.
+
+Key Terms in STS 
+Federation - Combining or joining a list of users in one domain (such as IAM) with a list of users in another domain (AD, FB etc)
+Identity Broker - a service that allows you to take identity from point a and join it(federate it ) to point b 
+Identity store - Services like AD, FB etc
+Identities - user of a service like FB etc
+
+----------------------------------------------------------------------------------------------------------------------
+Elastic Beanstalk
+is a service for deploying and scaling web apps developed in java, C#, python, node.js, ruby, go, docker onto widely used app servers like tomcat. ngix, passengers and IIS.
+so you upload the code and elastic beanstalk will manage deployment, auto scaling, capacity management, load balancing, application health check. Once it provisions the underlying resources , you will have full admin access to manage underlying resources like EB2 or S3. 
+
+The main difference between EB and Cloud formation is that with EB we do all the needed things through GUI but with cloud formation it is through JSON.
+
+supports several option for processing deployment updates:
+all at once - deploys new version all at once. all instances are out of service while deployment (outage). if update fails , roll back by installing old version.
+rolling - deploys new version in batches. each batch is takes out of service while deployment is in progress (env capacity is reduced). not ideal for perf sensitive apps.if update fails need to perform additional rolling update to roll back changes.
+rolling with additional batch - launches an additional batch of instances. deploys new version in batches(so full capacity is available). if update fails, need to perform additional rolling update to roll back changes.
+immutable - deploys the new version to a fresh group of instances in their own auto scaling group. when new instances pass health check they are moved into your existing autoscaling group and old instances are terminated (full capacity is maintained). the impact of failed update is less as it involves only terminating the new auto scaling group. Best for mission critical systems.
+
+You can customize elastic beanstalk environment using elastic beanstalk configuration file. these files are written in JSON or YAML and is saved with .config extension inside a folder called .ebextensions. this must be included in the top level directory of your application source code bundle.
+
+RDS and EB :
+There are 2 ways of integrating RDS with Eb.
+-launch RDS instance from within the elastic beanstalk console, this means RDS is tired to the instance of the app so if you terminate your app env your RDS also will be terminated.
+ this is suitable for dev or test systems.
+- for prod env the best approach is to decouple ads from EBs and launch it directly from RDS console. by this way you get more flexibility of launching multiple env and pointing it to same system. also by this way we can tear down our app env without affecting RDS. But to all EC2 instances to access the RDS created outside of EBs infrastructure you need to give additional security access to your app environment's auto scaling group and also provide connection string configuration info to your app server ( endpoints, username, pwd using EBs configuration properties).
+-------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------
+CODE COMMIT:
+used to store code in repo.
+uses git.
+
+Create a user and attach below policy and use that user to ssh or https to push the code from local git to AWS codecommit.
+IAM access needed: AWScodecommitFullAccess
+
+CODE DEPLOY :
+appsec.yml stores the configuration needed for code deploy. it is stored with the source folder of project in repo.
+appspec.yml
+version:
+os:
+File:
+	source:
+	destination:
+hooks:
+	BeforeBlockTraffic:
+	BlockTraffic:
+	AfterBlockTraffic:
+	ApplicationStop:
+	Downloadbundle:
+	BeforeInstall:
+		location:location of script to install dependencies
+		timeout:
+		runas:root
+		localtion:location of script to start server
+		timeout:
+		runas:
+	Install:
+	AfterInstall:
+		localtion:location of script to stop server
+		timeout:
+		runas:
+	ApplicationStart:
+		location:
+		timeout:
+	ValidationService:
+		location:
+		timeout:
+		runas:
+	BeforeAllowTraffic:
+	AllowTraffic:
+	AfterAllowTRaffic:
+
+Package code and appspec.yml file and create the applciation within code deploy: 
+aws deploy  create-application --application-name YOURAPPNAME
+once app is created push the app into your s3 or github or bitbucket repo:
+aws deploy push --application-name YOURAPPNAME --s3-location s://bucketname/yourappname.zip --ignore-hidden-files
+the application can be in .zip, .tar or .gz extensions.
+
+Open code deploy and you will be able to see the application.
+
+Deployment group: a deployment group consists of one or more EC2 instances or inpremise instances.
+
+Deployment Type:
+In-Place: each instance will be briefly taken offline for its update. 
+Blue/Green: replaces the instances with new isntances that has the revision. After instances from the replacement env is registered with LB the instances from currrent env is deregistered and terminated.
+
+Environment Configuration:specify instances to add to this deployment.
+Autoscalling : upto 10 autoscalling groups can be configured
+EC2 instances: Select the Tag of your EC2 -> Single Tag group single Tag, Single Tag group multiplt Tag, Multiple tag group single tag and Multiple tag group multiple tag. Max 3 tag groups 
+On-premise instances : 
+		
+Deployment configuration:
+CodeDeployDefault.AllAtOnce
+CodeDeployDefault.HalfAtTime
+CodeDeployDefault.OneAtTime
+
+Service Role: give the IAM role that grants code deploy access to your repo. 
+
+Then you can deploy revision. 
+
+Incase of same file name present in current and revision code then what to do :
+Fail th deployment
+Overwrite the content 
+Retain the content 
+
+Roll back option can also be configured if the deployment fails.
+
+**DOCKER: ECS - Elastic Container Service and ECR - Elastic Container Repo**
+allows to create apps based on linus or windows containers.	
+A container is a lightweight standalone package which includes everything the software needs to run like code, runtime env, libraries, env settings etc.
+AWS provices Elastic container Service as a fully managed clustered platform  which allows  to run docker images.
+so first you create a cluster in ECS . clusters are region based. there is NEtwroking only with AWs fargate for servless apps and EC2 linux with n/w and EC2 windows with n/w options . it will create cluster, VPC, subnet and autoscalling group. all these heavy lifting are done using cloud formation. 
+After configuring cluster , create ECR repo.
+give a repo name and repo URI is created.
+Now you have to BUILD, TAG and PUSH Docker image to this repo:
+to retrieve login cmd to the authenticate your docer client to registry.
+aws ecr get-login --region eu-central-1 --no-include-email
+this gives a docker login -u AWS with token keys  as output and you can use that to login 
+TO BUILD:
+docker build -t mydockerreponame
+it successfully builds docker image. and it will append latest to the end to say its the latest image. 
+TO TAG:
+After build you cna tag the build to push it to the repo
+docker tag mydockerreponame:latest regional namespave with docker imahe name :latest [called URI]
+TO PUSH;
+docker push full region and docker image name 
+
+Once docker image is pushed to repor we can create task:
+go to ECS and create task
+
+
+IAM role needed : AmazonEC2ContainerRegistryPowerUser
+
+
+We keep the configuration needed for docker in docker file:
+FROM ubuntu:12.04
+# Install apache
+RUN apt-get update -y
+RUN apt-get install -y apache2
+
+# Create a simple web page
+RUN echo "Hello Cloud Gurus!!!! This web page is running in a Docker container in AWS Elastic Container Service!!" > /var/www/index.html
+
+# Configure apache, set a few variables, expose port 80 and start apache
+RUN a2enmod rewrite
+RUN chown -R www-data:www-data /var/www
+ENV APACHE_RUN_USER www-data
+ENV APACHE_RUN_GROUP www-data
+ENV APACHE_LOG_DIR /var/log/apache2
+
+EXPOSE 80
+
+CMD ["/usr/sbin/apache2", "-D",  "FOREGROUND"]
+
+CODE BUILD:
+compiles code [build] and produces artifactory , run tests. 
+To create a json skeleton file which has build details for code build.
+aws codebuild create-project --generate-cli-skeleton
+Once you enter value in generate skeleton json file 
+aws codebuild create-project --cli-input-json file://filename.json
+
+incase an update to build is needed
+aws codebuild update-project --generate-cli-skeleton 
+aws codebuild update-project --cli-input-json file://filename.json
+
+to start a build 
+aws codebuild start-build --project-name
+
+
+buildspec.yml
+----------------
+version:
+env:
+	variables:
+	parameter-store:
+
+phases:
+	install:
+		commands:
+		finally:
+	pre_build:
+	build:
+	post_build:
+artifacts:
+	files:
+cache:
+	paths:
+
+PIPELINE:
+NAme of the pipeline
+source from where it can pull the revision: s3 , code commit, git hub and the path to it.
+Build : No build, add jnkins, codebuild, solano CI
+Deploy: ECS, cloud formation, cloud deploy, elastic beanstalk.
+chose the existing app through code deploy where you are going to replace current app with revision. 
+Service Role : give IAM role
+Review and create it.
+Source ->staging
+Source : if source file is updated with changes then cloud watch knows about the change and triggers code deploy (staging is trigeered)
+Staging : deploys code to instances.
+
+--------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------ 
+
+
+https://acloud.guru/forums/aws-certified-developer-associate/discussion/-LHhDbmUsANUwizU38YE/passed_cda(7~2F17~2F18)_with_98%25_a
+
+

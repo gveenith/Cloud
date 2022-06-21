@@ -1,0 +1,282 @@
+EC2 - Elastic Compute Cloud:
+is a web service that provides resizable compute capacity in cloud.
+it reduces time required to obtain and boot a server. 
+so we can quickly scale capacity up and down.
+can SSH or instance connect(only if instance uses Amazon Linux image) into an EC2 instance
+
+Instance types
+General Purpose - General purpose instances provide a balance of compute, memory and networking resources, and can be used for a variety of diverse workloads.
+				  eg: T2, T3 M5, M6i, A1
+				  usecase: Developing, building, testing
+Compute Optimized - Compute Optimized instances are ideal for compute bound applications that benefit from high performance processors
+					eg: C4, C5, C6i, C7g
+					usecase: High performance computing (HPC), batch processing, ad serving, video encoding, gaming, scientific modelling, distributed analytics, and CPU-based machine learning inference.
+Memory Optimized - Memory optimized instances are designed to deliver fast performance for workloads that process large data sets in memory.
+				   eg: x1, r4, r5, r6i
+				   usecase: Memory-intensive applications such as open-source databases, in-memory caches, and real time big data analytics
+Accelerated Computing - Accelerated computing instances use hardware accelerators, or co-processors, to perform functions, such as floating point number calculations, graphics processing, or data pattern matching, more efficiently than is possible in software running on CPUs.
+						eg: P2, P3, P4, F1, DL1
+						usecase: Machine learning, high performance computing, computational fluid dynamics, computational finance, seismic analysis, speech recognition, autonomous vehicles, and drug discovery.
+Storage Optimized - Storage optimized instances are designed for workloads that require high, sequential read and write access to very large data sets on local storage. They are optimized to deliver tens of thousands of low-latency, random I/O operations per second (IOPS) to applications.
+					eg: D2, D3, H1, I3, I4i
+					usecase: high compute performance and high network throughput such as relational databases (MySQL, MariaDB, and PostgreSQL), and NoSQL databases (KeyDB, ScyllaDB, and Cassandra). 
+Instance features
+Burstanble perfomance instance (gauranteed baselevel performance with capability to burst above baseline), Multiple Storage Optinos , EBS Optimised instances, cluster networking, 
+
+EC2 Instance Purchasing Options:
+1. On demand - Allows to pay by sec (linux and windows - pay by sec after first min) or hour (other os) with no commitment. 
+			   used for short predictable workload.Has highest cost but no upfront payment.
+2. Reserved - (1 & 3 year options )you can reserve capacity with significant discount on hourly charges 1 or 3 years term contracts. you can reserve  specific attribute of an instance (instance type, region, zone, os, tenancy etc).
+			  Recommended for stead usage apps like Database. No upfront , partial upfront, upfront payment (more discount) options. can buy and sell reserved instances in market place.
+			  standard reserved instances - long workload 
+			  convertible reserved instances - long workload with flexible Instances as long as the amount is equal or greater value.
+			  Scheduled RI - these are availbale to launch within the time window you reserve. 
+3. Spot - you set max spot price and get the instance when the curent price is < max spot price. short workload.
+		  cheap (can get upto 90% dicount compared to ondemand price) and can lose instance (stop, terminate or hibernate) when proces goes above max spot price. 
+		  usefull for workload that is resillient to failure.(batch jobs, data analytics, image processing etc). not suitable for critical jobs.
+		  spot request - you can place a spot request with riterias like ax price, instance number, launch specs, request type like one time or persistent, request valid from and to etc. 
+		  				 spot req can be in open , active or disable state. cancelling a spot request does not terminate the instances. Before terminating the instance spot request needs to be cancelled if not it gets into a loop.
+		  spot fleet - alows us to automatically request spot instance with lowest price. set of spot instances + (optional) on demand instances. spot fleet will try and meet target capcity with price constraint. can define multiple fleet launch pools like instance type , avaia zones etc 
+		  			   stratergies to allocate spot fleet - lowest price, diversified, capacity optimized.
+		  spot block - block spot instance for specific timeframe .
+4. Savings plan - (1 or 3 year contract) commited to an amount of work, long workload. usage beyind savings plan is billing on on demand pricing. locked to specific instance family and region. flexible across OS and instance size.
+5. Dedicated Hosts - A Physical server with EC2 instance capacity is dedicated for our use and can decide on placement. you can use existing software licenses and reduce the cost.helps address compliance requirements.
+					can use on demoand or eserved payment option for this. 
+6. Dedicated instances - Instance runs on hardware that is dedicated to you. no other customer will share your hardware. no control over instance placement. 
+7. Capacity reservation - reserve on demand instances capacity in any AZ or region for any duration. you always have access to the capcity reservation. can create/cancel instances at any time. no discounts. charged on demand rate.
+
+Security Group
+SG act as firewall on EC2 instances. They regulate the type, protocol, port , source IP range and control the inbound and outbound traffic.
+SG can be attached to multiple instances. But are limited to region/VPC combination. it lives outside EC2 acting as firewall and blocking/filtering traffic. if app is not accessible and time out then SG issue as it has blocked it.
+SG only contain allow rules. SG rules can reference by IP or another SG.
+
+Placement Group
+help to control EC2 instance placement by using one of the below placement stratergy:
+cluster - cluster instances into a single AZ. provides low latency high bandwidth. but if rack fails all instances fail. eg: apps needing low latency or short completion time
+spread - spread instances across AZ (max 7 instance per group per AZ). helps in availability and reduce failure .
+partition  - spread instances across many different partitions witin an AZ (max 7 patition per AZ). can scale to 100s of Ec2 per group (kafka, casandra, hadoop). harware is isolated across partitions so a partition failure will not affect another.
+
+
+commonly used ports
+22 - SSH linux
+3389 - SSG Windows RDP
+80 HTTP
+443 HTTPs
+21 FTP
+22 - SFTP ( using SSH)
+
+IPV4: commonly used - 1.123.12.123 . 3.7 billion combinations , 0-255.0-255.0-255.0-255
+IPV6: newer and commonly used by IOTs - 1234:12we:12vb:3:45:123k:123n
+Public IP - use to identify machines over internet. must be unique across whole web. can be used to geo locate.
+Private IP - ise to identify machines in private network. ip must be unique over private nw. two different private n/w across orgs can have same private ips.
+Elastic IP -  if we want a fixed IP address for our instance then need to create an elastic IP and attach it to the private address of the instance then the instance has a fixed public IP address.
+ENI - Elastic Network Interface  - Logical componeent in a VPC that represents a virtual network card. create and attach it to EC2 network interface instance id. bound to AZ. 
+	  following attributes can be associate to it: primary IPv4 address, onr or more secondary address. one elastic IP per private IPv4. one public Ipv4, one more more SG, a MAC address. 
+
+
+AMI - Amazon Machine Images - An AMI is a template that contains the software configuration (operating system, application server, and applications) required to launch your instance. 
+You can select an AMI provided by AWS, or the AWS Marketplace; or you can create your own AMIs.
+AMIs are built for specific region (can be copied across region)
+Using AMI we can start and stop an instance, customize it, build AMI that can also create EBS , launch stances from other AMi.
+
+EBS - Elastic Block Store - is a network drive that is used as storage volumes and can be attached to EC2. 
+it allows to persist data even after termination. They can be mounted to only one instance at a time. but an instance can have multiple EBS volumns.
+They are bound to specific vailability zones. Since its a n/w drive there will be bit of a latency. can be detached and attached to an EC2 instance quickly.
+to move a volume from one AZ to another we have to copy it to a snapshot and then copy that snapshot over to the new colume in the AZ we want.
+There snapshots can be later moved to EBS snapshot archive which is 75% cheaper but takes 24 to 72 hours to restore. 
+There is also a recylce bin for ebs snapshots from where it can be recovered if accidentally deleted. (specify retention ( 1 day to 1 year))
+ Need to provision capacity (size in GBs and IOPS).
+Delete on termination attribute - root volume is deleted by default. other attached EBS volume is not deleted by default. 
+
+
+the different type of storage volumes are : 
+General Purpose SSD (GP2)[3 IOPS per GB for up to 10,000 IOPS]- General purpose, balances price and performance. 
+Provisioned IOPS SSD(IO1) [for more than 10,000 IOPS upto 20,000 IOPS]- i/o intensive apps sub as large RDB or No SQL.
+Throughput Optimized HDD (ST1) - cannot be a boot volume can only be additional volume. It is used for big data processing, data warehousing.log processing etc.
+Cold HDD(SC1) - low cost store for infrequent accessing workloads. best for file server. Cannot be a root volume.
+Magnetic (standard) - low cost per gigabyte. can be root volume. 
+
+
+
+Chose Instance type - FIGHTDRMCPX - Amazon EC2 provides a wide selection of instance types optimized to fit different use cases. Instances are virtual servers that can run applications. They have varying combinations of CPU, memory, storage, and networking capacity, and give you the flexibility to choose the appropriate mix of resources for your applications. Learn more about instance types and how they can meet your computing needs.
+Chose Instance details configuration - Configure the instance to suit your requirements. You can launch multiple instances from the same AMI, request Spot instances to take advantage of the lower pricing, assign an access management role to the instance, shutdown behavior, termination protection, monitoring and more.
+Add Storage - Your instance will be launched with the following storage device settings. You can attach additional EBS volumes and instance store volumes to your instance, or edit the settings of the root volume. You can also attach additional EBS volumes after launching an instance, but not instance store volumes.
+Add Tags - A tag consists of a case-sensitive key-value pair. For example, you could define a tag with key = Name and value = Webserver.
+A copy of a tag can be applied to volumes, instances or both.
+Configure Security Group - A security group is a set of firewall rules that control the traffic for your instance. On this page, you can add rules to allow specific traffic to reach your instance. For example, if you want to set up a web server and allow Internet traffic to reach your instance, add rules that allow unrestricted access to the HTTP and HTTPS ports. You can create a new security group or select from an existing one below. 
+Review and Launch 
+create private key pair
+
+****LAB****
+
+To ssh to an instance programmatically from local.
+change the permission to the private key : chmod 400 keypairname.pem
+Connect to your instance using its Public DNS:
+ssh -i "NewKeypair.pem" ec2-user@.us-east-2.compute.amazonaws.com
+sudo yum update to apply any updates
+Elevate access to root : sudo su
+ec2-user will become root
+then install apache to turn this server into a web service
+yum install httpd -y
+start the service:  service httpd start
+If the EC2 instance reboots we want apache to come on automatically: chkconfig https on
+to check the status of apache service: service httpd status
+cd /var/www/html
+cd html
+you can create a file using nano file name.html
+launch the service using public DNS and you can see the output of the file.
+
+----------------------------------------------------------------------------------------------------------------------------
+Elastic Load Balancer: 
+There are 4 types namely: Application, Network , Gateway and Classic Load balancers (deprecated)
+
+Classic Load Balancer
+CLB is layer 4 (HTTP & HTTPs) and 7 (TCP). can configure health checks. fixed hostname. 
+Application loadbalancer 
+ALB is layer 7 (HTTP). LB can point to multiple target groups(multiple HTTP apps across machines or same machines), 
+target groups can be ec2 instances, ecs tasks, lambda functions and private IP addresses. ALB can route to multiple target groups.
+supports HTTP, HTTPS and websocket. can redirect from http to https.
+ALBs can be internet (dualstack i.e IPV4 and IPV6) or internal facing (IPV4).
+routing based different options like: path in url,  hostname in url, query string and headers.
+great fit for container based and micro services. has port mapping feature to redirect to dynamic port in ECS.
+Fixed hostname. public address IPv4 address of your end user is set in x-forwarded-for header, port info in x-forwarded-port and proto in x-forwarded-proto.
+
+Network Load Balancer
+NLB is layer 4 (TCP, UDP). allows millions of req per sec. less latency ~100ms(compared to ALB which is ~400ms)
+NLB has one static ip per AZ and supports elastic IP (helpful for whitelisting).
+used for extreme performance. can send traffic to EC2, private ip and ALB.
+
+Gateway Load Balancer
+GLB operated at layer 3 (network layer - IP packets). uses GENEVE protocol on port 6081. 
+used to deploy, scale and manage 3rd part fleet of appliances in AWS. usecase: firewall, intrution detection, deep packet inspection, payload manipulation.
+combines "transparent network gateway" (single entry/exit for all traffic.) and  LB  (distributes traffic to your virtual appliances.)
+integrates with EC2 , private IP instances
+
+Sticky session (Session affinity)
+Sticky session enables a client to be redirected to same instance behind a LB using cookies. 
+these cookies has expiration date which is used to control stickness. 
+ALB and CLB can set them.
+use case : user does not lose session data. downside : brings imbalance to EC2 load.
+Application based cookies
+	custom cookies - generated by target , can include custome attribute. induvidual to each target. reserved names (dont use them) AWS ALB, AWSALBAPP, AWSALBTG.
+	application cookie -  generated by LB, cookie name AWSALBAPP.
+Duration based cookies - cookie generated by LB. cookie name AWSALB, AWSELB.
+
+CrossZone Loal Balancing
+WITH crosszone LB - each LB instances distributes evently cross all registered instances in all AZ.
+WITHOUT crosszone LB - req are distributed in the instances of each specific LB. 
+in ALB (default, always ON), NLB (disabled and if enabled then pay for inter AZ data), CLB (disabled by default, no charged if enabled)
+
+Connection Draining (CLB) / Deregistring deplay (ALB & NLB)
+time to complete in-flight requests while instance is dergistering or unhealth. new requests are stopped. 
+1 to 3600sec. (default 300sec). can be disabled when set to 0.set to low value if your request is short.
+
+ELB - SSL certificates (Secure Socket Layer)
+SSL allows traffic between client and LB to be encrypted in transit. Now a days TLS (Transport Layer Security) is used which is newer but might still be called as SSL certs.
+public SSL cert are issues by certificate authority (CA). SSL certs have expiration date and must be renewed.
+LB uses X.509 certificates (SSL/TLS cert). we can manage these certs using AWS Certificate manager or privately.
+must use a SSL cert by default. 
+also supports multiple certs for multi domains. 
+clients can use SNI (SERVER NAME INDICATION) to reach the specified hostname after corresponding SSL authentication.
+ony ALB and NLB supports this. 
+
+
+
+Note:
+504 means that gate way has timeout out.
+ this means app is not responding within idle time out period. check the apps service or database servers.
+-------------------------------------------------------------------------------------------------------------------
+
+Auto Scalling Group (ASG)
+ASG heps to sacle in and out to match the load increase and decrease. this ensures we have min and max number of instances to address the load.
+Can automatically register new instance with LB. IAM roles attached to ASG will get assigned to EC2. ASG can terminate instances marked unhealth by LB.
+A launch configuration with below attributes are created to manage ASG
+AMI+ instance type, ec2 user data, ebs volumn , security group, SSH key pair, min -max size,initial capcity, n/w + subnet info, LB info.
+Launch templates are newer than launch configuration and are preffered.
+ASG can scale based on CW alarms. alrm monitors metric. metric is for overall ASG. policies scale in and out based on it.
+ASG new rules - possible to define auto scaling rules that are managed by EC2. (no of req on ELB per instance, target avg CPU util, avg nw in and out.)
+ASG custom metric - can scale based on custm metric that EC2 sends to CW using PutMEtric API.
+
+Scalling policies 
+Scheduled action - anticipate scalling on known usage patterns. eg. inc min capacity to 10 at 5pm on fridays.
+Dynamic Scalling Policies
+	Target Tracking scalling - simple and easy to setup . eg: i want the avg ASG CPU Time to stay at around 40%
+	simple/step scaling - when a CW alarm is triggered (eg CPU Time > 70) then add 2 units or (eg CPU time <30) then remove 1 unit.
+Precitive scalling policy - continuously forecast load and schedule scaling policy. analyze historical load, predict forcast and schedule scaling policy. uses ML to achieve forecast.
+Note - example metrics that can be used to scale are CPU Utilization, Request count per target, avg nw in/out, any custom metric(from CW)
+After scalling happens there is a default cool down period of 300 seconds to track the metric. during cool down ASG will not launch or terminate instances. after cool down period is done ASG scalling policy can be triggered again.
+----------------------------------------------------------------------------------------------------------------------
+
+Route 53:
+It is amazon's DNS service. highly availbale, scallable and customer managed service.
+Can perform health checks.
+Domain Name: example.com 
+record name: secondary domain name.  a name we will use to acceess our resource. eg: "test" the the uri is test.example.com
+Record type: A or AAAA
+value: 12.34.56.78
+routing policy: how route 53 responds to queries.
+TTL: amount of time DNS is cached at DNS resolvers. 
+	High TTL  eg: 24 hrs ( less traffic to route 53 but chances of outdated records), 
+	LOW TTL (more traffic to 53 but records are outdated for less time and easy to change records)
+	Except for alias records TTL is mandatory for all DNS records.
+
+record types: 
+Standard - A (maps a hostname to IPv4 address), 
+		   AAAA (maps a hostname to IPv6 address and some AWS resources),
+		   CName (maps a hostname to another hostname and some AWS resources. the host name will have either A or AAAA entry already ). works only for non root domain.
+		   NS (Named Server for hosted zone, controls how traffic is routed for a domain)
+Advanced - CAA, DS, MX, NAPTR, PTR, SOA, TXT, SPF, SRV
+ALIAS - points a hostname to AWS resource. 
+		works for both root and non root domain. 
+		free of charge and health check can be configured. 
+		automatically can recognize ip changes of mapped resources. 
+		alias records are alswways of type A/AAAA for aws resources.
+		can be mapped to ALB, S3 Websites, Cloudfront, API Gateway, EBS, VPC interface endpoint, Global accelerator, Route 53 hosted zone in same region.
+		cannnot be mapped to EC2 DNS name.
+		toggle alias ->type of aws resource -> region -> resource name.
+
+hosted zones 
+public hosted zone - contains records that specify how to route over internet
+private hosted zone - within one to one VPC. internal routing.
+Provide domain name and contact details for registring and creating domain in route 53. 
+once created we can see the entry in hosted zone and corresponsing NS record and SOA (star of Authority) record which has contact information.
+If we purchase domain name from 3rd party like go daddy then we need to create a public hosted zone in route 53 DMS service and then copy the name server details of hosted zone in DNS service over to 3rd party service registar(i.e go daddy).
+
+routing policy
+defines how route 53 responds to DNS query.
+Simple - typically route traffic to a single resource. can return multiple resource values too ( then cient decides which resource to choose). no health check
+Weighted - controls the % of the request that go to each resource. dns records must have same name and types. can configure health checks. used for load balancing b/w regions, testing new app versions. if 0 weight is assigned then no trffic is sent . if all records have 0 weight then traffic is spread equally.
+Latency - redirect to resource tnat has lest latency close to us. can configure health checks.
+failover - (active - passive). associate primary record to health check and if health cehck fails it will fail over to secords record which can also be confiured with helath checks.
+geolocation - routing is based on user location. in record specify continent or country or by us state .should create a default record in case no match to location exist. use cae. website localization, content distribution or restriction. can be associated to health checks.
+geoproximity - route traffic to your resource based on geographic location of users and resources. a bias value is entered which determines to which resource location does the traffic get routed to. the higer the value the more the traffic (1 to 99). to reduce the traffic (-1 to -99). route 53 traffic flow advance is needed for this policy. This is policy is used to divert more traffic to a region based on bias.
+multi value -use when routing traffic to multiple resources. route 53 returns multiple value (upto max 8 values can be returned). health check can be configured.
+
+Health check -  HTTP health checks is for pulic resources only. 
+				is used to monitor health of an endpoint (app, aws resource, server). 
+				health checks can be used to monitor other health checks too (calculated health checks). 
+				for private resources to which health checks cannot be configured we can let them monitor the cloud watch alarms.
+				Max 15 health checkers can check endpoint health. health check standard internal 30 sec, fast 10 sec.
+				health check pass when 200 or 300 status is returned. failure threshold can be set. can be setup to pass/fail based on text in first 5120 bytes response. 
+				configure firewal to allow incoming health request checks.
+Calculated health check - combines result of multiple health check into  single health chek. you can use ANS, OR , NOT . can monitor upto 256 child healt checks. specify how many of the child needs to pass to get the parent to pass. use case . website maintanance.
+
+Traffic flow - simplifies the process by providing a visual editor o manage complex routing decision trees. these configuration can be saved as traffic low policy. and they can be versioned and used.
+
+
+Route 53 Creation example:
+it allows you to map you domain names to EC2, S3, Load balancers.
+First you have to choose a domain name. Then provide contact details and verify the email address and then purchase it.
+You can add EC2 or cloud front etc to your load balancers and then place load balancers behind Route 53.
+In order to put the EC2 instance behind load balancer we need to create a load balancer after choosing the EC2 instance. Lets say we chose Application load balancer.
+Step 1 is to configure load balancer with basic information, Listner, availability zones.
+Step 2 is to configure security settings.
+Step 3 is to configure security groups
+Step 4 is to configure routing
+Step 5 is to register targets
+
+Once the EC2 instance is behind loadbalancer we can see it reflect in route 53.
+Open the domiain name behind which we want the load balancer to be. Got to create record set.
+Chose the type and and select alias target and create record set. Alias target will reflect the load balanced instance we created.
+now if you type the domain name you will get the output.
+

@@ -1,0 +1,119 @@
+SQS - Simple Queue Service
+Gives access to message queue where you can store messages while waiting for computer to process them. (async processing)
+It is a distributed message queue system. 
+Queues are temporary storage for messages before they are picked by app. 
+It is PULL-BASED system not a push based one. 
+Messages can contain upto 256KB of text in any format.
+Messages can be kept in queue from 1 min to 14 days. Default retention period is 4 days. 
+Any component can receive this service programmatically using SQS API
+
+  
+2 Types of queues: Standard queues and FIFO queues
+- Standard Queues: Default queue type. lets you have unlimited number of transactions per second. guarantees  delivery of message at least once. however due to highly 	distributed architecture it can be delivered more than once. Standard queues provide best effort ordering which ensures msg are generally sent in the same order they came 	in but not guaranteed. 
+- FIFO : First In First Out, messages are delivered exactly once and ordering is strictly preserved. 
+			Duplicate msgs will never be introduced into the queue , once a msg is sent to customer it waits for customer to consume and delete it. 
+			it also supports message groups that allow multiple ordered msg groups in a  single queue. 
+			FIFO queues are limited to 300 TPS or if batching is performed then 3000TPS.
+			but have all capabilities of standard queues. 
+			queue name must end with .fifo
+			ordering using message group id.
+			content based duplication - if same msg is sent within 5 min window then duplicate is caught. deduplication id is used to see if similar msgs are coming within the duplication interval.
+
+Visibility Timeout: is the amount of time a message is invisible in the queue after a reader picks up the msg. 
+					If the job processes the message before the visibility timeout period then the msg is deleted from queue. 
+					if it does not then it is made visible in queue again for another job to process it and this might cause duplicate delivery of message. 
+					Default visibility timeout is 30 sec. max we can set is 12 hours.
+					IF the visibility timeout needs to extended then can use changeMessageVisibilityApi to get more time
+Delivery Delay - 0 to 15 seconds
+Receive message wait time - 0 to 20 seconds
+message retention period - 1 to 14 days default 4 days
+Max msg size - 1kb to 256 KB
+
+SQS Access Policy - basic (owner only access, aws account access) and advanced (json policy)
+Encryption -  in transit encryption is provided by default , at-rest encrytion can be enabled and customer master key can be set for encryption.
+Purge - will delete all the message in the queue
+
+SQS Long Polling: is a way to relieve msg from the queue. 
+short polling return immediately (if the queue is empty with no msg, it will return immediately with empty polling) 
+where as with long polling it will wait till a msg arrives or until long poll timeout.
+Long polling can save money because it decreases number of API calls made to SQS while increasing efficieny and latency of the application.
+Max long poll timeout is 20 sec and min is 1 sec.
+it can be configured using api also using waitTimeSeconds attribute.
+
+SQS Temporary queue Client: 
+Request - response system -  requesters (producer of msg) will send msgs to request queue to which autoscalling applications (back end) will poll to msgs. 
+once read and processed they will send the reponse to response queue (esponse queue 1 , 2 ,3 )and the requester will have other apis which will listent to these response queue and get the msgs. 
+this pattern is called sqs temporary queue client. it leverages virtual queues instead of creating / deleting actual sqs queues.
+
+-------------------------------------------------------------------------------------------------------------------
+SNS - Simple Notification Service	
+SNS is a web service that makes it easy to setup , operate and send notification from cloud.
+It follows Publish-Subscribe (Pub-Sub) message model with notification being delivered to client using push mechanism.
+It provides developers with highly flexible, scalable and cost effective capability to publish messages from a app and deliver it to subscribers. 
+SNS can deliver notification directly to mobile, send SMS or email to SQS or to any HTTP endpoint. 
+They can also trigger Lambda so when a message is published to a SNS topic d a lambda function is subscribed to it , the lambda function is invoked using the message payload as input parameter. 
+
+SNS TOPIC: Can group multiple recipients using topics.
+ Topic is a "access point" to allow recipients to dynamically subscribe for identitical copy of same notification.  
+ New feature allows subscribers filtering of messages from topics .
+ One topic can support delivery to multiple endpoint types eg. android, iOS nd SMS recipients can be grouped together and when a message is published SNS delivers appropriate copy to each subscriber.
+To prevent losing the message they are stored redundantly across multiple AZ.
+
+topic publish and direct publish - 
+topic publish - using SDK , create topic, create subscription for topic , publich to topic.
+direct publish - for mobile sdk create platform application , pltform endpoint , publist to platform endpoint . works with googke GCM, apple apns , amazon adm.
+
+Instantaneous push based deliver ( no polling)
+Flexible msg delivery over multiple protocols.
+inexpensive pay as you go model.
+encryption - at rest using kms , inflight using https api and client side encryption.
+access controls ( through IAM )and sns access policies 
+SNS Message Filtering is possible with json policy so msgs can be filtered before sending to subcribers.
+
+Fan out pattern:
+SNS+SQS  - Push once to SNS and receive in all sqs queues that are subscribers. Fully decoupled. No data loss. Need to make changes in sqs access policy to allow msgs from sns
+eg: s3 event notification if needed to be sent to multiple services then this fan out pattern can be used , where s3 sends the event to sns and sns sends it to different sqs / lambdafrom where other services can poll.
+sns to s3 through kineis firehose is also possible.
+Sane concept is availbel with sns FIFO and SQS FIFO,
+
+SNS Pricing :
+$0.50 per 1 million amazon SNS requests.
+$.06per 100,000 notification over HTTP
+$.75 for 100 SMS
+$2 per 100,000 notification over email
+
+SNS VS SQS
+SNS- PUSH
+SQS - PULL (Polls)
+
+Amazon MQ: if on prem queue is in (MQTT, AMQP, STOMP, openwire, WSS) and if they just need to be lifted into cloud without any changes then amazon mq can be used.
+-----------------------------------------------------------------------------------------------------------------
+Kinesis
+is a platform on AWS to send your streaming data. 
+makes it easy to load and analyze streaming data and also provides the ability for you to build your own custom app.
+eg: ingest IOT data, application logs, metrics, website clickstream etc.
+Kinesis Streams - Producers send data to kinesis streams which consists of shards  on which these stream data are stored for 24 hours and we can increase it to max 7 days retention.
+				  then consumers can take data from shards for their processes. 
+				  Build custom app and process data in real time. 
+				  producers will send record that consist of partition key and data to data stream.
+					the incoming records are sent at 1MB per sc or 100 msg/per sec per shard. 
+					using partition key data stream determines which shard will process it.
+					consumers are lambda, kinesis firehose, kinesis data analystics, apps(kinesis producer library, sdk).
+					when kinesis data stream sends record to consumers it consists of partition key, seq no and data.
+					the out going records are sent at 2MB per sec per customer.
+				  the total capacity of streams is the sum of the capacity of shards.
+				  data reteintion 1 to 365 daysablility to reproduce(replay) data.
+				  once data is inserted in data stream it cannot be deleted. (immutable)
+				  data that sahres same partition goes to same shard (ordering)
+	-Video streams - securely streams video from connected devices to AWS for analytics and machine learning.
+	-Data Streams - catures, processes and store data stream. real time (~200ms)
+capacity mode - provisioned and on demand mode
+provisioned - choose the number of shards, scale manually. in 1MB/s (or 1000 records per sec) out 2Mb/s per shard. pay per shard provisioned hour.
+on demand - capacity of shards is managed automatically. default capacity is 40 mbs or 4000 records per sec
+					
+Kinesis Firehose - load data stream into aws data stores. Producers send data to kinesis firehouse and the consumers can use this data for analytics using lambda if needed or send it to S3 or store it redshift through, or send to 3rd party apis (data relic , ngo db , splunk etc) 		 s3. But they can't store or retain it in firehouse. Firehose is a completely automated process. Pay for data going through firehose. near real time (min 60 sec)
+Kinesis Analytics - Analyse data store with sql or apache flink. consumers send data which are stored either in streams or firehose and then analytics can be used to allows to run sql query on the data resides in firehose or 		streams and the resultant data can be stored in s3, redshift to elasticsearch cluster. can create streams from the sql queries . pay for actual consumtion rate. real time analystics.
+
+Record - consists of partition key and data . these records will be consumed by shards. depending upon partition key it will be determine which record goes to which shard.
+
+
