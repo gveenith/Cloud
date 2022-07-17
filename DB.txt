@@ -1,0 +1,106 @@
+RDS
+RDS is managed service for relational database in cloud - my sql , postgresql, microsoft sql server, maria db, oracle, aurora.
+continuous backup, os patching, estore to specific point in time, read replicas, multi az for DR, maintenance, scalling, storage backed by EBS. but you cannt SSH into your instance.
+backups are automatically enabled in RDS. daily full backups of db (during maintenance window),transaction logs every 5 mins, point in time restore( olders to as early as 5 mins), 7 day retention (can increase to 365 days).
+snapshots are triggered manually by user and can be retainined as long as we want.
+autoscalling , when RDS detecs you are running out of space , it scales automatically and adds instances till max threashold is set by user.
+Read replicas - up to 5 read replicas (within AZ, cross Z or cross region). replication is ASYNC, so reads are eventually consistent. replicas can be promoted to their own DB. Applications must update the connection string to levelrage read replicas. data moving within relicas in same AZ is free but to other az there is a fee.
+multi AZ (Disaster recovery) -  SYNC replication. increase availability. reas replicas in multi az can be setup for disaster recovery fail over 
+can move from single AZ to multi az. snapshot is taken and new db is created nd then both are synced .
+encryption at rest (KMS) when the instance is first created and flight (SSL). 
+Encrypted RDS - if master is not encrypted then replicas connot be encrypted. snapshots of encrypted RDS db are encypted. snapshots of unencrypted RDS db are unencypted. can copy a snapshot to an encrypted one.
+to encrypt an unecrypted RDS - create snapshot of unencrypted db, copy the snapshot and enable encryption, restore db from encrypted snapshot, migrate pp to new db and delete old db.
+RDS are ususally deplyed in private subnets so security groups controls which ip/security group can access it. to access RDS instance user name and pwd can be used and for api calls iam policies can be setup and can call RDS service to get auth token which can then be used to make api operations in rds.
+-------------------------
+Aurora
+postgresQL and my sql are both supported as Aurora db. aurora is clud optimized and offers 5x perf over my sql and 3x over postgres.
+storage automatically grows 10GB at a time, upto 128GB. aurora has 15 replicas and failover is instentaneous.
+6copies of data across 3 AZ. 4 out of 6 is needed for write and 3 out of 6 for read. self healing with peer to peer relication. 
+one aurora instances takes writes( master ). supports cross region replication. automatic failover, ack up and recovery, push button scaling, adv monitoring, routing maintenance, point in time restore.
+encryption of read replicas, backups d snapshots, encryption at rest (KMS) and flight (SSL). auth through IAM tokens.
+writer endpoint (pointing to master), reader endpoint (connection load balncing to read replicas), custom endpoint (can be used to direct specific queries to specific instances)
+
+aurora serverless helps in auto scalling based on usage/ capacity. 
+aurora multi master - incase you want fail over for write nodes. here every node does R/W where as normally if a write failes other read replica can be  promoted  as the new master. 
+global aurora - easy to put in place, seful for disaster recovery. primary region (read/write). upto 5 secondary region, replication lag is less then 1 second. upto 16 read replicas per secondary region. decrease latency and improves disaster recovery.
+aurora ML - enables to add ML prediction to to app via sql. simple integration b/w aurora and ml service. supports sagemaker and comprehend. use case: fraud detection, product recomendation.
+-------------------------
+Elasti Cache 
+Elasti cache is to get managed Redis or memcached. caches are in memory DB for high perfomance, low latency. helps reduce load of db and make app stateless by storing session data of user. 
+app queries for data and if its a cache hit then get from cache or if its a cache miss then query db and then cache the data and then return to user. helps reduce load on RDS. need to have invalidation stratergy. 
+PAtterns: Lazy loading (all reads are cached, data can be stale). write through (all or update data in cache when writen to DB), session store
+REdis - multi AZ. read relicas to scale reads and have high availbalility. back up and restore. can setup user/pwd for extra security on redis cluster. use case: leader board (using redis sorted sets)
+Memcached - multi node for partition of data (sharding). no HA (no replication), no backup or restore, multi thread architecture, on persistent.
+-------------------------
+snowball - highly secure , portable device to collect and process data at the edge.
+Data migration - snowcone, snowball edge, snowmobile
+Edge Migration - snowcone , snowball edge
+
+data migration
+snowball edge - physical data transport solution. snowball edge storage optimized (80TB HDD), snowball edge compute optimized (42TB HDD) compute optimized with GPU.
+snowcone - small , portable computing anywhere, rugged & secure. device used for edge computing, storage and data transfer. 8TB of usable storage.
+snowmobile - transfer exabytes of data . each snowmobile has 100PB of capacity.
+
+edge migration 
+snowcone edge - 2CPUs, 4GB of memory , wired or wireless. USB-C power using a cord or battery.
+snowball edge - compute optimized (52vCPU, 208 GB RAM, compute optimized with GPU, 42 TB usable storage),storage optimized (40vcpu, 80GBRAM)
+
+order from console , install snowball client / opsHub (GUI to manage snow family devices.) on your server, connect snowball to server, tranfer data, send back to aws, data will be loaded to s3 and after completion snowball is completely wiped.
+ 
+If data from snowball needs to be put in GLacier - then move from snowball to s3 and create a life cycle hook to move data from s3 to glacier.
+-------------------------
+AWS FSx 
+Fully managed service to launch 3rd party file systems in AWS.
+FSx Lustre - lustre is a type of parallel distributed file system for large scale computing. use case: machine learning , HPC, video processing, automation
+             scales up to 100s GB/s, millions of IOPS, sub ms latency. 
+             seamless integration with S3.  can be access from on prem.
+             storage options: SSd (low latency, ntensive workloads, mall and random file operation) and HDD (throughput intensive workloads, large & sequencial operations)
+             File system deployment options : persistent and scratch
+            Persistent  - long term storage. data is replicated within same AZ. replace failed files asap. usage: long term processing, sensitve data.
+            scratch filesystem - temp storage, data is not replicated. high bursts. use case: short term processing and optimize cost.
+
+FSx for windows File server - is fully manged windows file system share drive.
+                              supports MB and NTFS protocol. Microsoft AD integration, ACL, user quotas, can be mounted on linux EC2 instances. 
+                              scales upto 10s of GBs, millions of IOPS, 100 PB of data.
+                              can be access from on prem. can be configured to be multi az and single az deployment types.
+                              storage options: SSD (latency sensitive workload i.e. database, analytics) and HDD (braod spectum of workloads i.e CMS)
+FSx for NetApp ONTAP 
+FSX for open ZFS 
+--------------------------
+Storage Gateway -  used as gateway for data from on premise to cloud. use case: disaster recovery, tiered storage, backup and restore.
+                   For using storage gateway we need on premise virtualization, otherwise we can use storage gateway harware appliance.
+File storage gateway -   helps store file from on prem to cloud. There are 2 options AWS S3 file gateway and amazon FSx file gateway.
+                        AWS S3 File Gateway  - enables you to store file data as objects in Amazon S3 cloud storage for data lakes, backups, and ML workflows.
+                                               configured S3 buckts are accessible using NFS and SMB protocol. upports S3 Stnadard, S3 standard -IA , S3 one zone IA and S3 Glacier.
+                                               most recently accessed file can be cached in file gateway. integrated with AD for user authentication.
+                        AWS FSX File Gateway - native access to FSx for windows file server. low cache for frequent accessed data. windows native compatible (SMB, NTFS,AD).
+                                               Useful for group file shares and home directories.
+volume storage gateway - Block storage using iSCSI protocol backed by S3. volume gateway stores and manages on prem data to S3 and operates in either cache or store mode. in both modes ,you can take point-in-time copies of your volumes using AWS Backup, which are stored in AWS as Amazon EBS snapshots. 
+                        Cached Volume gateway mode - your primary data is stored in Amazon S3, while retaining your frequently accessed data locally in the cache for low latency access.
+                        Store volume gateway mode -  your primary data is stored locally and your entire dataset is available for low latency access on premises while also asynchronously getting backed up to Amazon S3
+tape storage gateway - Tape Gateway enables you to replace using physical tapes on premises with virtual tapes in AWS (S3) without changing existing backup workflows. Tape Gateway supports all leading backup applications and caches virtual tapes on premises for low-latency data access using iSCSi interface.
+                      t compresses your tape data, encrypts it, and stores it in a virtual tape library in Amazon Simple Storage Service (Amazon S3). From there, you can transfer it to either Amazon S3 Glacier Flexible Retrieval or Amazon S3 Glacier Deep Archive to help minimize your long-term storage costs.
+-------------------------------
+AWS Transfer Family
+fully managed service for file transfer in and out of amazon s3 or amazon EFS using FTP protocol.
+AWS Transfer for FTP , AWS Transfer for FTPS, AWS transfer for SFTP.
+managed infra, highly availbale, sclable, reliable, can store and managed user cred in service or integrate with exisitng authentications ystem like okta, AD, cognito for user auth.
+use case: sharing files, public data sets, RM, ERP.
+-------------------------------
+Dynamo DB 
+non relational database
+OLTP - Online Transaction Processing -> Dynamo DB
+-------------------------------
+Redshift
+used for OLAP - Online Analytics Processing . 10x better perfomance than other data warehouses. columnar storage of data. Massively parallel query execution. BI tools such as AWS quicksight or tableau.
+From 1 node to 128 node and each node can have 128TB of space. leader node for query planning and execution. compute node for performing query and sending the result to leader. redshift spectrum perform query directly on S3. 
+data can be loded into redshift through firehose, s3 or ec2. 
+---------------------------------
+Glue
+Managed Extract Transform & Load (ETL) service. fully serverless. 
+---------------------------------
+Neptune
+Fully managed graph database. 
+---------------------------------
+OpenSearch 
+successor to ElasticSearch. with open search you can search any field 

@@ -151,12 +151,18 @@ set up own password rotation policy
 Integrates with many different AWS services
 Supports PCI DSS compliance 
 
+User can access AWS through three options. 
+AWS Management console (password + MFA)
+AWS CLI (access key pairs)
+AWS SDK (access key pairs)
+
 Important terminology :
-User
-Group
-Roles
-Policies: 
-vre
+User - is an entity (person or service) you create in AWS to interact in AWS 
+user Groups -  is a collection of AWS users. cannot contain other groups
+Roles - IAM identity that you can create in your account that has specific permissions. 
+		An IAM role is similar to an IAM user, in that it is an AWS identity with permission policies that determine what the identity can and cannot do in AWS. 
+		However, instead of being uniquely associated with one person, a role is intended to be assumable by anyone who needs it. 
+Policies: are JSON document that manage access in AWS. you can attach policies to user, group or roles. 
 JSON{
 "Version": "2012-10-17"
 "Id":"S3-Account-Permission"
@@ -172,15 +178,74 @@ JSON{
 		  "S3:PutObject"
 		  ],
 	  "Resource": ["arn:aws:s3:::mybucket/*"]
+	  "Condition": optional field to determine a condition when this policy is in effect.
 	}
 ]
 
 }
+Policy Notes
+1. condition examples
+aws:sourceIP  - restriction to restrict calls only from client ip mentioned in condition 
+Aws:RequestedRegion - restriction to restrict calls only from certain region 
+Restriction based on tags
+Force MFA
+2. while listing bucket level actions make sure to list bucket arn in Principle where as when performing object level actions provice object level arn eg- arn:aws:s3:::bucket/*
+3. IAM Roles vs Resource Based policies - understand the difference and use it in best of the cases. in IAM roles where user assumes a role they give up their original role and use the assigned role to perform action. where as in resource policy they will have theit original permisssions.
+
+MFA - Multi factored authentication can be enabled. can use:
+Virtual MFA device (like google auth, Authy) 
+physical device i.e universal 2nd factor (U2F) security key (like yubikey)
+HArware key fob device (like gemalto)
+HArware key fob device for gov cloud (like sure pass id)
 
 IAM is used to define user access permission within AWS. There are 3 types of IAM policies:
-1. Managed Policies - is created & managed by AWS itself. you can't edit or change the permission defined in it. you can just assign it to single or multiple user, groups and roles.
-2. Customer Managed Policies - is standalone policy that you create and administer inside your own aws account. you can attach it to multiple users, groups and roles. basically its taking an existing managed policy and customizing it to meet you account needs. 
+1. AWS Managed Policies - is created & managed by AWS itself. you can't edit or change the permission defined in it. you can just assign it to single or multiple user, groups and roles.
+2. Managed Policies - is standalone policy that you create and administer inside your own aws account. you can attach it to multiple users, groups and roles. basically its taking an existing managed policy and customizing it to meet you account needs. 
 3. Inline Policies - it is embedded within a single user, group or role. strict 1:1 relationship. if the user/group/role to which the inline policy is embedded, then policy itself is deleted. AWS recommends to use managed policy over inline policy.
+
+IAM security tools -  Access reports
+IAM Credentials reports (account-level) - a report that list ll your account level usersnd their status of various credentails.
+IAM access advisor (user-level) - service permission granted to user and when those services were last used.
+
+
+
+IAM Permission Boundary 
+supported for users, groups and roles. advance feature to use a managed policy to set maximum permission an IAM entity can get. 
+
+EC2 Instance metadata - http://169.254.169.254/latest/meta-data - can retrieve lot of information about EC2 instance like instance specific details (public private ip address, hostname , iam policies attached etc.)
+
+Simple Token Service 
+Grant users simple and temporary access to AWS resources. Token is valid from 15 min to 1 hour.
+Assume Role - assume role in target account to perform action or if using in same account then can do so for enhanced security 
+AssumeRoleWithSAML -  return cred for user logged with SAML
+AssumeRoleWithWebIdentity - returns cred for user logged with Identity Provider (fb, google etc). AWS recommends cognito instead.
+GetSessionToken -  for MFA, from a user or AWS account root user.
+
+1. Federation (typically active Directory) - uses SAML2.0 “security assertion Markup Language” . Grants temp access based off users AD credentials. Does not need to be user in IAM. SSO allows users to sign on to AWS without assigning IAM credentials.
+2. Federation with Mobile apps - uses Google/Amazon/FB other open ID providers to log in 
+3. Cross Account access - users form one AWS account access resources of other account.
+
+Key Terms in STS 
+Federation - Combining or joining a list of users in one domain (such as IAM) with a list of users in another domain (AD, FB etc)
+Identity Broker - a service that allows you to take identity from point a and join it(federate it ) to point b 
+Identity store - Services like AD, FB etc
+Identities - user of a service like FB etc
+
+
+
+Directory services
+AWS Managed Directory Service -  create your own AD in AWS , manage users locally, supports MFA. establist trust connection b/w on prem and aws AD
+AWS Connector - directory gateway (proxy) to redirect to on prem AD.users are managed on on prem ad.
+Simple AD - AD managed in AWS. CANNOT be joined with on prem.
+
+
+SSO
+Centrally managed SSO to access multiple accounts and 3rd part applications. Integrated with AWS Organizations, on premise AD. supports SAML and centralized permission management and logging.
+
+Resource Access Manager
+Share AWs resources you own with other AWS accounts. This helps to avoid resource duplication. 
+Example VPC subnets - allows to  have all resources launched in same subnet. must be from same AWS Organization. cannot share security and default VPC. participants cannot view, edit or delete other participants or owners resources. they can managed their own resources. and resources in the VPC can share the network and communicate b/w each other through private IP.
+		AWS TRansit Gateway, route 53 resolver rules, license manager configurations.
 
 Web Identity Federation
 Lets you give access to users to AWS resources after they have successfully authenticated with web based identity providers like fb, google, amazon. the user first authenticates with web identity provider and upon successfully authentication it gives an authentication token which can be traded for temporary AWS credentials allowing them to assume IAM role.
@@ -473,17 +538,7 @@ dynamo db transaction management is also available.
 SES - Simple Email Service
 is a scalable and highly available automated email service designed to help marketing teams, transactional emails, shipping confirmation etc. can also be used to receive emails.
 -------------------------------------------------------------------------------------------------------------------
-Simple Token Service 
-Grant users simple and temporary access to AWS resources.Users can come form 3 sources 
-1. Federation (typically active Directory) - uses SAML “security assertion Markup Language” . Grants temp access based off users AD credentials. Does not need to be user in IAM. SSO allows users to sign on to AWS without assigning IAM credentials.
-2. Federation with Mobile apps - uses Google/Amazon/FB other open ID providers to log in 
-3. Cross Account access - users form one AWS account access resources of other account.
 
-Key Terms in STS 
-Federation - Combining or joining a list of users in one domain (such as IAM) with a list of users in another domain (AD, FB etc)
-Identity Broker - a service that allows you to take identity from point a and join it(federate it ) to point b 
-Identity store - Services like AD, FB etc
-Identities - user of a service like FB etc
 
 ----------------------------------------------------------------------------------------------------------------------
 Elastic Beanstalk

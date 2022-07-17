@@ -1,0 +1,134 @@
+VPC
+Classless Inter-Domain Routing (CIDR) -  method for allocating IP address. used in security group rules and AWS networking in general.
+Base Ip (represent IP ontianed in a range)and subnet mask (defines how many bits can change in a ip)
+192.168.0.0/32 allows for 1 IP 2 to the power 0
+192.168.0.0/31 allows for 2 IP 2 to the power 1
+192.168.0.0/30 allows for 4 IP 2 to the power 2
+192.168.0.0/32 allows for 8 IP 2 to the power 3
+.
+192.168.0.0/24 allows for 256 IP 2 to the power 8
+.
+192.168.0.0/16 allows for 65536 IP 2 to the power 16
+.
+192.168.0.0/0 allows for ALL IP.
+
+Virtual Private Cloud - can have multiple vpc in a region ( 5 per region but can be increased based on request to AWS).
+max CIDR per VPC is 5 and for each CIDR min size /28 (16 IP address), max size /16 (65536 IP addresses).
+Since VPC is private only private IPv4 rangeis allowed.
+10.0.0.0 - 10.255.255.255 (10.0.0.0/8)
+172.16.0.0-172.31.255.255(172.16.0.0/12)
+192.168.0.0-192.168.255.255(192.168.0.0/16)
+
+Default VPC
+All accounts have default VPC. resources are launched in default vpc if subnets are not specified. default vpc have internet connectivity and public ipv4 address.
+
+Subnet
+A subnet is a subrange of IPv4 address in a VPC. There are Public subnet and private subnet. 
+AWS reserves 5 IP addresses (first 4 and last 1)in each subnet.
+First 4 - Network Address, VPC router, mapping to AWS provided DNS , for future use. Last 1 - Network Broadcast address 
+
+Internet Gateway 
+Allows internet access to resources in subnet. scales horizontally and is highly available. Must be created seperately from a VPC.
+only one VPC can be attached to one IGW and vice versa. Route table also need to be edited to allow internet access to public subnet.
+
+Bastion Host
+is used to SSH into our private EC2 instance. Bastion host instance is kept in public subnet and users can SSH into bastion host and from there can agin ssh into private instace.
+security group of bastion host needs to b tightened. eg bastion host must only have port 22 traffic from the IP address you need and not rom security group of your ec2 instance. 
+
+NAT Instance
+Network Address Translation (NAT) allows private instances to connect to internet. NAT instances must be launched in public subnet.
+Must disable EC2 settings: source/destination check. Must attach elastic ip to the instance and configure route table to route outbound traffic from private subnet to the nat instance.
+it is not highly availble / resilient straght away additionalconfiguration (multi Az + auto scling +resilient user data script needed)
+
+NAT Gateway 
+AWS managed, highly availble , high bandwidth, no administration. pay per hour for usage and bandwidth. NATG is created in a specific AZ and uses an elastic ip.
+cannot be used by an instance in same subnet, needs to be consumed only from another subnet. Need to be connected to IGW. 5GBps bandwdth with automatic scalling up to 45GB.
+No need to manage security Group. Can setup NATG in multi AZ for HA.
+
+DNS REsolution in VPC
+Inorder to use custom doamin names for instances in private hosted zone then we have to enable enableDnsSupport & enableDnsHostname.
+enableDnsSupport - decides if DNS resolution from route53 is supported by VPC. 
+enableDnsHostnames - assigns public hostname to EC2 instances if it has a public IpV4 
+
+NACL [Network Access Control List] & SG 
+NACL are like firewall that control traffic from and to subnets. One NACL per subnet. new subnets are asigned to default NACL. 
+Can define NACL rules. Rules have numbers (1-32766)higher precendence with a lower number. First rule match will drive the decision.
+Last rule is an asterick * and denies request of no rule matches. recommendation is to add rules in increment of 100. 
+Newly created NACL will deny everything. Great way of blocking specific Ip address at subnet level. 
+Default NACL - Accepts everything inbound/outbound with the subnet its associated with. Do not modify default nacl instead create new one.
+Ephimeral port - are ports that client designate to which it expect response from the request it initiated to the server.
+Security groups operates at instance level. Supports allow rules only . It is statefull i.e return traffic is allowed regardless of any rule. All rules are evelauated before allowing traffic. applies to ec2 instance when specified by someone.
+NACL operates at subnet level. upports both allow and deny rules. it is stateless. return traffic must be explicitly allowed. rules are evelauated in order (lowest to highest), lowest first match wins. automatically applies to all ec2 instances in the subnet.
+
+Reachability Analyzer - A n/w analyser tool that troubleshoots n/w connectivity between 2 endpoints and provides analysis results.
+
+VPC Peering 
+Privately connect two VPC using AWs network. Must not have overlapping subnets. Can enable peering in different AWS regions/accounts.
+They are not transitive. Each VPc that needs to be connected has to have peering. Must update route table in VPC to allow instances to communicatewith each other. 
+you can reference a SG in peered VPC (works across accounts - same region)
+
+VPC endpoints
+VPC endpoint allows to connect to publicly accessible AWS services through private network instead of public n/w. They are redundant and scale horizontally. 
+in case of issues check the route table entry or dns setting resolution in vpc. There are 2 types of endpoints:
+Interface endpoint - Provisions an ENI as entry point. (Must attach a SG)
+Gateway endpoint - Provisions a gateway and must be used as a target in route table. supports both s3 and dynamo db
+
+VPC Flow Logs
+Capture information about IP traffic going into your interfaces. Helps to monitor and troubleshoot connectivity issues. 
+Flow logs information can go to s3/ cloudwatch logs. There are : vpc flow logs, Subnet flow logs and ENI flow logs
+logs contain source and destination ip, port, action . tese can be used to analyze patterns, malicious attacks.
+you can query vpc slow logs in s3 using athena or cloud watch insights. can debug SG and NACL issues using flow logs.
+incoming request -> inbound reject -> SG or NACL issue
+                    inbound accept , outbound reject -> NACL 
+outgoing request -> outbound reject -> SG or NACL issue 
+                    outbound accept, inbound reject -> NACL issue 
+
+Site to Site VPN
+Virtual Private Gateway - VGW is setup as VPN concentrator in AWS side. VGW is created and attached to VPN from which you want to create the site to site connection.
+                           Enable route propagation in your route table for the connected subnets.
+                           If need to ping EC@ instance from on premise then allow ICMP in inbound of your security group.
+Customer Gateway - CGW is a physical device setup in customer side of the VPN.  
+                   Public internet routable IP address can be used to route traffic through internet but if its a private device then it would be behind a NAT devide (with NAT-T enabled) which would expose its public IP for connection to VGW.
+Cloud Hub - spoke and hub model to provide secure communicate b/w multiple sites (VPN) (on prem - cloud) . connect multiple VPN to same VGW and configure routing.
+
+Direct Connect (DX)
+Provides dedicated private connection from a remote network to your VPC. Dedicated connection must be setup between your Data center and AWS direct connect locations. 
+you need to setup a virtual private gateway in your vpc. Can access s3 and ec2 on same connection. usecase: lower cost, increase bandwidth, working with large data sets , live data feed.
+direct connect gateway - if need to connect to one or more vpc then setup direct connect gateway. 
+Direct connect types : dedicated connection  - 1 gbps to 10 gbps capacity.physical ethernet port dedicated to a customer.
+                        hosted connection - 50Mbps, 500Mbps to 10Gbps capcity. capacity can be added or removed by demand. 1,2,5,10GBps availbale at select aws direct connect partner locations.
+Takes around 1 month to setup connection. data in transit is not encrypted but is private. direct connect + vpn gateway/interface provides an IPsec encrypted private connection.  High resilient connection can be setup by putting multiple Direct connect in same AZ.
+
+AWS Private Link (VPC Enpoint Services)
+secure and scallable way to expose a service to 1000s of VPC. Does not require VPC peering, IG, NAT, route tables etc. Instead needs NLB and ENI or GWLB.
+can make solution fault tolerant by setting up NLB and ENI in multi AZ.
+
+EC2 Classic & AWS Classic Link (deprecated)
+initially EC2 shared n/w with other customers and amazon introduced VPC. classic link allowes to link ec2 classic instance to a vpc in your account. 
+
+
+VPC Traffic Mirroring
+allows to inspect traffic in your VPC by routing it to security instances that we manage. 
+with TM we can capture the all or filtered traffic from source ENI from same or different VPC and route it to NLB or another ENI which can then route to our security instances for further analysis.
+use case : content inspection , threat monitoring, torubleshooting.
+
+IPV6 for VPC
+IPV4 is designed for 4.3B addresses. IPV6 has 3.4 * 10 power 38 unique IPs. Every IPV6 adress is public and internet routable.
+x.x.x.x.x.x.x.x (x ishexadicimal, range can be from 0000 to ffff)
+200l:db8:3333:4444:5555:6666:7777:8888
+200l:db8:3333:4444:5555:66ef:abcd:ffff
+:: -> all 8 segments are zero
+200l:db8:: -> last 6 segments are zero
+200l::db8 -> middle 6 segments are zero
+IPV4 cannot be disabled in VPC . if IPV6 is enabled then they operate in dual stack mode. 
+If we cannot launch EC2 instances in VPC then check for IPv4 CIDr range cos all could have been used up so creating new CIDR blocks is needed.
+
+Egress-Only Internet Gateway
+used only for IPv6. allows instances with IPV6 in VPC for outbound connection to internet while preventing inbound connetion. route table must be updated. 
+
+Note
+use private nw over public for beter nw performance and cost savings. use same az for max savings (at the cost of high availability).
+Try to keep internet traffic within aws as much as posible. Architect in a way that outbound traffic (egress traffic) is low. DC locations that are co located in same region result in lower cost for egress nw.
+S3 ingress is free, S3 to internet is 0.99 per GB, s3 transfer acceleration incurrs data transfer cost + 0.04 to 0.08 per GB.
+S3 to cloudfront 0.00 per gb and CF to internet 0.085per GB (slightly cheaper then S3 and helps with caching and reduce s3 request pricing). S3 cross region replication is 0.02 per gb.
+NAT Gateway is expensive compared to VPC endpoint in making communication to internet from instiances inside vpc.

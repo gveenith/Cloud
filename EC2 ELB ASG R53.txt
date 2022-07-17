@@ -73,6 +73,11 @@ Elastic IP -  if we want a fixed IP address for our instance then need to create
 ENI - Elastic Network Interface  - Logical componeent in a VPC that represents a virtual network card. create and attach it to EC2 network interface instance id. bound to AZ. 
 	  following attributes can be associate to it: primary IPv4 address, onr or more secondary address. one elastic IP per private IPv4. one public Ipv4, one more more SG, a MAC address. 
 
+EC2 enhanced Networking - Higher bandwidth, lower lateancy, higher packets per sec, 
+		Elastic Network Adapter -up to 100GBps
+		Intel 82599VF upto 10GB (old model)
+		Elastic Fabric Adapter -  improved ENA for HPC for Linux. Grat for inter node communication. 
+
 
 AMI - Amazon Machine Images - An AMI is a template that contains the software configuration (operating system, application server, and applications) required to launch your instance. 
 You can select an AMI provided by AWS, or the AWS Marketplace; or you can create your own AMIs.
@@ -81,23 +86,48 @@ Using AMI we can start and stop an instance, customize it, build AMI that can al
 
 EBS - Elastic Block Store - is a network drive that is used as storage volumes and can be attached to EC2. 
 it allows to persist data even after termination. They can be mounted to only one instance at a time. but an instance can have multiple EBS volumns.
-They are bound to specific vailability zones. Since its a n/w drive there will be bit of a latency. can be detached and attached to an EC2 instance quickly.
-to move a volume from one AZ to another we have to copy it to a snapshot and then copy that snapshot over to the new colume in the AZ we want.
+They are bound to specific availability zones. Since its a n/w drive there will be bit of a latency. can be detached and attached to an EC2 instance quickly.
+to move a volume from one AZ to another we have to back up anEBS volume (snapshot - point in time) and then copy that snapshot over to the new volume in the AZ we want. Not necessary to detach volume to do a snapshot, but recommended.
 There snapshots can be later moved to EBS snapshot archive which is 75% cheaper but takes 24 to 72 hours to restore. 
 There is also a recylce bin for ebs snapshots from where it can be recovered if accidentally deleted. (specify retention ( 1 day to 1 year))
  Need to provision capacity (size in GBs and IOPS).
-Delete on termination attribute - root volume is deleted by default. other attached EBS volume is not deleted by default. 
+Delete on termination attribute - controls the EBS behaviour on EC@ termination. root volume is deleted by default. other attached EBS volume is not deleted by default. 
 
-
-the different type of storage volumes are : 
-General Purpose SSD (GP2)[3 IOPS per GB for up to 10,000 IOPS]- General purpose, balances price and performance. 
-Provisioned IOPS SSD(IO1) [for more than 10,000 IOPS upto 20,000 IOPS]- i/o intensive apps sub as large RDB or No SQL.
-Throughput Optimized HDD (ST1) - cannot be a boot volume can only be additional volume. It is used for big data processing, data warehousing.log processing etc.
-Cold HDD(SC1) - low cost store for infrequent accessing workloads. best for file server. Cannot be a root volume.
+the different type of EBS storage volumes are : 
+Solid State Drives SSD
+General Purpose SSD (GP2/GP3)- General purpose, balances price and performance for a variety of workloads. 1GiB to 16TiB . System boot volumes, virtual desktops, dev and test envs. 
+							   gp3 - baseline 3000 IOPS and throughput of 125 MiBs. can increae IOPS upto 16000 and throughput upto 1000MiBs independently.
+							   gp2 - small gp2 volumes an burst upto 3000 IOPS. IOPS and throughput are linked to size of volume. max IOPS is 16000 so 5334 GB GP SSD volume we are maxed out.
+Provisioned IOPS SSD(IO1)- [for more than 10,000 IOPS upto 20,000 IOPS]- business critical, i/o intensive apps sub as large RDB or No SQL.
+							Supports EBS MULTI ATTACH - can attach same EBS instance (io1/io2) to multiple ec2 instances by enabling multi attach. each instance has full read and write permissions to the volume.
+							use case: achieve highly availability in clustered linux apps. apps ned to manage concurrent read and writes. file system that is cluster aware. 
+						   io1/io2 (4GiB - 16TiB) Max PIOPS : 64000for nitro ec2 instnace and 32000 for other types. can increase PIOPS independent of storage. io2 have more durability and iops at same price as io1.
+						   io2 block express (4GiBs - 16TiBs)sub milli sec latency. Max PIOPS 256000 with an IOPS:GiB ratio of 1000:1. Supports EBS multi attach.
+Hard Disk Drives HDD
+Throughput Optimized HDD (ST1) - cannot be a boot volume can only be additional volume. It is used for big data processing, data warehousing.log processing etc. max throughput of 500MiBs and max iops of 500,
+Cold HDD(SC1) - low cost store for infrequent accessing workloads. best for file server. Cannot be a root volume. throughput 250MiBs and max ops 250
 Magnetic (standard) - low cost per gigabyte. can be root volume. 
 
+EBS Encryption - when EBS volume is created , data at rest is encrypted inside the volume. all data in flight moving b/w instance and volume is encrypted. all snapshots and volumes created from snapshots are encypted.
+Minimal latency impact due to encryption and encyption is done using KMS (AES-256). copying an unencypted snapshot and creating an EBS volume of it enables encryption. 
+
+EC2 Instance Store (Ephemeral storage) - high perfomance hard disk (compared to EBS which is a network drive). give netter I?O perfomance.
+Good for buffer data, cache,scratch data. If EC2 instance is stopped then the data in instance store is lost. riskof data loss if hardware fails. 
+back ups and replication are your responsibility. 
+
+EFS - Elastic File System : They are managed network file system that can be mounted on multiple EC2 instnaces. EFS works with ec2 in multi AZ environment. highly available, scalable, expensive, pay per use.
+use cases are content management system, web erving data, data sharing, word press. uses NFsV4.I protocol. uses SG to controll access to EFS.
+compatible only with Linux based AMI and NOT WINDOWS. encrypton at rest using KMS. POSIX file system 10 GB+ /s throughpput. 1000s of concurrent NFS clients. Grows to PB scale nw file system.
+Perfomance mode - general purpose (default). use case - web server, CMS. MAx IO. high latency, throughput, higly parallel. (big data, media processing)
+Throughput mode - Bursting (1 TB = 500MiBs + burst of up to 100MiBs). Provisoined , set your throughput regarless of storage size, eg 1GiBs for 1Tbstorage
+Storage Classes - StorageTier(lifecycle management feature - move file after N days). Stnadard (for frequently accessed files), IA (low price to store, but cost to retrieve files) and other lifecycle policies like IA-one zone.
+availability and durability - ulti-az great for prod, one-zone (great for back up and test)
 
 
+
+
+
+------------------------
 Chose Instance type - FIGHTDRMCPX - Amazon EC2 provides a wide selection of instance types optimized to fit different use cases. Instances are virtual servers that can run applications. They have varying combinations of CPU, memory, storage, and networking capacity, and give you the flexibility to choose the appropriate mix of resources for your applications. Learn more about instance types and how they can meet your computing needs.
 Chose Instance details configuration - Configure the instance to suit your requirements. You can launch multiple instances from the same AMI, request Spot instances to take advantage of the lower pricing, assign an access management role to the instance, shutdown behavior, termination protection, monitoring and more.
 Add Storage - Your instance will be launched with the following storage device settings. You can attach additional EBS volumes and instance store volumes to your instance, or edit the settings of the root volume. You can also attach additional EBS volumes after launching an instance, but not instance store volumes.

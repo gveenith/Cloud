@@ -1,0 +1,81 @@
+Well Architected framework
+1. Operational Excellence
+2. Security
+3. Reliability
+4. Perfomance Efficiency
+5. Cost optimization
+6. Sustainability
+
+Disaster Recovery 
+on prem -> on prem (expensive)
+on prem -> cloud (hybrid)
+cloud Region A-> cloud Region B
+
+RPO - Recovery Point Objective
+RTO - Recovery Time Objective
+From RPO to Diaster strike there is data loss . From disaster to RTO is downtime.
+
+Disaster recovery stratergies : Faster RTO , slow to fast order below
+Backup and restore -  back up data . spin up env and use the back up data.
+pilot light - a very small core critical apps are always running in cloud
+warm stand by - Full system is up and running but at minimum size
+hot site / multi site approach - Very low RTO. entire system at prod scale will always be running.
+
+Disaster Recovery Tips  - Back up , HA, Replication, Automation, Chaos testing
+
+Data Migration Service - DMS 
+Used to migrate data from on prem to AWS. homogeneous (same db to db) or heterogeneous migration is supported. continuous data replication using CDC (change data capture).
+if heterogeneous migratoin then Schema conversion Tool is needed to convert schema from one engine to another after which DMS can be used to migrate data.
+
+On premise migration to cloud - aws offers lot of services like VM import/export, AWS application discovery service, database migration service, server migration service.
+
+AWS DATA sync - move large amount of data from on prem to cloud. can sync to S3, EFS, FSx.move data from NAS or file system via NFS or SMB protocol. 
+                Replication tasks can be scheduled but need data sync agents installed in system.
+                
+Transferring large data sets to AWS - over internet/ siste to site VPN ( for low volume of data. its cheap and easy to setup). over AWS direct connect (large data fast to transfer but takes time to setup initially). over snowball (very fast , can be combined with DMS)
+
+Trusted Advisor 
+provides high level acount assesment. analyze and provide recommendation about . corechecks available for all customers but need business & enterprise plan for full trusted advisor features.
+1. cost optimization
+2. Perfomance
+3. Security
+4. Fault tolerance
+5. service limits
+
+
+appSync
+Stores and Syncs ta across mobile and web apps in real time. makes use to GraphQL. can do offline data sync. fine grained security.
+
+cost explorer
+helps visualize, understand and manage aws cost and usage over time. can analyze data through reports at high level (total cost and usage) vs low level (monthly, hours resource level granularity).
+get recommendationto chose optimal savings plan ans forecasts upto 12 months based on usage.
+
+EMR - Elastic Map Reduce 
+helps create Hadoop cluster to analyse and process large volume of data (big data). the clusters can be 100s of EC2 instances and EMR takes care of the provisioning and configuration. auto scalling and integration with launching spot instances.
+use case: machine learning, data processing, web indexing, big data etc.
+
+AWS OPS Work - AWs ops work = Managed Check and puppet . chef and puppet helps perform server configurations automatically or repetitive actions.
+
+AWS Workspace - Managed, secure cloud desktop. alternative to eliminate managemnt of on prem VDI. 
+
+Stepfunction - build serverless workflow to orchestrate lamda function. represt flow as STATE machine. has sequnce, parallel, condition, timeouts, error handling features. can also integrate with EC2, api gateway, ecs , on premise servers. max exec time of 1 year. use case orfer fullfillment
+
+SWF - Simple Work Flow - Coordinate work amongst EC2 applications. Concept of actiity step and decision step . can run max for 1 year. has built in human intervention step. Step functoin is prefferd.
+
+cloudformation - infrastructure as code .
+CF template componenets : resources, parameters, mappings, outputs, conditionals,metadata. Template helpers(reference, functions)
+cloudformation stack sets - create , delete or update stacks cross multiple ccounts and regions with a single operation.
+
+Machine Learning
+Rekognition - find objects , people, 
+Transcribe - speech into text. uses deep learning process called automatic speech recognition ASR to convert peech into text quickly. use case : subtitle , transcribe customer service call, generate metadata for media assets.
+Polly - turn text into life like speech using deep learning. Allows you to create application that talk.
+Translate - natural and acurate language transalation. helps localize website content for international users and help to easily translate large colume of text.
+Lex - (same tech that powers alexa)ASR to convert speech to text. Natural language processing to recognize the intent of the callers.helps build chatbots, call center bots.
+Connect - receives calls, creates contact flow , virtual contact center. can integrate with other crm systems of aws. No upfront payment, 80% cheaper.
+Comprehend - Natural Language processing. fully managed and serverless. uses ML to find insights and relationship in text. use case :analyze customer email and group them by topics
+SageMaker - used to build ML models.
+Forecast - uses ML to predict forecast.use case : product demand planning, financial planning, resource planning etc.
+Kendra - Document search service using ML. it indexes keyworks from the documents and searches them for answers using natural language search capabilites.
+Personalize - fully managed ML serverice to build apps with real time personalized recommendation. usecase : similar products or recommended products to buy.
+Textract - Automatically extract text, handwriting and data form any scanned document using ML nd AI.
